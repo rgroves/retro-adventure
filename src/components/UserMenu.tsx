@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Grid, Loader, useTheme } from '@aws-amplify/ui-react';
-import { WithAuthenticatorProps } from '@aws-amplify/ui-react'
+import { Flex, Loader, useTheme, Text, Button } from '@aws-amplify/ui-react';
+import { useAuthenticator } from '@aws-amplify/ui-react'
 import { fetchUserAttributes } from 'aws-amplify/auth';
 
-export default function UserMenu({ signOut, user }: WithAuthenticatorProps) {
+export default function UserMenu() {
+    const { user, signOut } = useAuthenticator((context) => [context.user]);
     let [userNick, setUserNick] = useState("");
 
     useEffect(() => {
@@ -14,14 +15,16 @@ export default function UserMenu({ signOut, user }: WithAuthenticatorProps) {
         loadUserAttributes();
     }, [user])
 
-    const nickname = userNick ? <p>Hello {userNick}</p> : <Loader />;
     const { tokens } = useTheme();
+    const nickname = userNick ? <Text>Welcome {userNick}</Text> : <Loader />;
     return (
-        <Grid
-            templateColumns={'1fr 1fr'}
-            gap={tokens.space.medium}>
+        <Flex
+            color={tokens.colors.font.primary}
+            justifyContent="flex-end"
+            alignItems="center"
+            gap={tokens.space.small}>
             {nickname}
-            <button onClick={signOut}>Sign out</button>
-        </Grid>
+            <Button size="small" onClick={signOut}>Sign out</Button>
+        </Flex>
     );
 }
