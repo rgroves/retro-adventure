@@ -1,0 +1,11 @@
+<svg width="2500" height="2500" xmlns="http://www.w3.org/2000/svg" style="vector-effect: non-scaling-stroke;" stroke="null">
+
+ <g stroke="null">
+  <title stroke="null">Layer 1</title>
+  <rect stroke="#000" rx="100" id="svg_4" height="2048" width="2342" y="226.00001" x="79" stroke-width="0" fill="#ff0000"/>
+  <g stroke="null" id="svg_6">
+   <text stroke="#000" transform="matrix(66.9078 0 0 61.1856 -26023.3 -15711.6)" font-style="normal" font-weight="bold" xml:space="preserve" text-anchor="start" font-family="monospace" font-size="24" id="svg_1" y="281.27685" x="394.99658" stroke-width="0" fill="#ffffff">R</text>
+   <text stroke="#000" transform="matrix(66.9078 0 0 61.1856 -26023.3 -15711.6)" font-style="normal" font-weight="bold" xml:space="preserve" text-anchor="start" font-family="monospace" font-size="24" id="svg_2" y="289.22025" x="406.99658" stroke-width="0" fill="#ffffff">A</text>
+  </g>
+ </g>
+</svg>
