@@ -27,6 +27,7 @@ type TerminalProps = {
 
 export default function Terminal({ game }: TerminalProps) {
   const { tokens } = useTheme();
+  const [inputDisabled, setInputDisabled] = useState(true);
   const [narrativeOutput, setNarrativeOutput] = useState<JSX.Element[]>([]);
   const [feedbackOutput, setFeedbackOutput] = useState<JSX.Element[]>([]);
   const [playerPrompt, setPlayerPrompt] = useState("");
@@ -89,6 +90,7 @@ export default function Terminal({ game }: TerminalProps) {
     setFeedbackOutput([]);
     setPlayerPrompt("");
   };
+
   const powerHandler = () => {
     const value = !power;
     setPower(value);
@@ -96,9 +98,11 @@ export default function Terminal({ game }: TerminalProps) {
       terminalWindowRef.current?.scrollTo(0, 0);
       game.initialize();
       game.start();
+      setInputDisabled(false);
     } else {
       clearTerminal();
       game.stop();
+      setInputDisabled(true);
     }
   };
 
@@ -123,7 +127,11 @@ export default function Terminal({ game }: TerminalProps) {
             {feedbackOutput && feedbackOutput.map((line) => line)}
             {playerPrompt && <Text ref={playerPromptRef}>{playerPrompt}</Text>}
           </ScrollView>
-          <TerminalInput playerInputProcessor={game.processInput.bind(game)} />
+          <TerminalInput
+            playerInputProcessor={game.processInput.bind(game)}
+            disabled={inputDisabled}
+            setDisabled={setInputDisabled}
+          />
           <Button
             alignSelf={"flex-end"}
             borderColor={power ? "green" : "red"}
