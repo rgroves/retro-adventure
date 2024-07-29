@@ -15,6 +15,7 @@ export class Game {
   public currentScene: Scene;
   public state: GameState;
   public inventory: Map<string, Item>;
+  public score: number;
 
   get playerInputParser() {
     return this._playerInputParser;
@@ -64,6 +65,7 @@ export class Game {
     this._playerInputParser = new PlayerInputParser();
     this._scenes = this.loadScenes();
     this.inventory = new Map();
+    this.score = 0;
   }
 
   changeState(state: GameState) {
@@ -97,6 +99,7 @@ export class Game {
             this.currentScene.items.delete(playerCommand.item);
             this.inventory.set(item.name, item);
             playerCommand.message = item.takenMessage;
+            this.score += item.takenPointValue;
             this.outputAdapter([playerCommand.message, ""]);
           } else {
             playerCommand.status = PlayerCommandStatus.INVALID;
@@ -104,6 +107,7 @@ export class Game {
             this.outputAdapter([playerCommand.message, ""]);
           }
           break;
+
         case PlayerCommand.INVENTORY:
           const inventoryOutput: string[] = [];
           if (this.inventory.size > 0) {
@@ -117,6 +121,10 @@ export class Game {
             inventoryOutput.push("Your inventory is empty.");
           }
           this.outputAdapter([...inventoryOutput, ""]);
+          break;
+
+        case PlayerCommand.SCORE:
+          this.outputAdapter([`Score: ${this.score}`, ""]);
           break;
       }
     }
@@ -140,6 +148,7 @@ export class Game {
                 id: crypto.randomUUID(),
                 name: "widget",
                 isTakeable: true,
+                takenPointValue: 25,
                 takenMessage: "You take the widget. It is very widget-y.",
               }),
             ],
