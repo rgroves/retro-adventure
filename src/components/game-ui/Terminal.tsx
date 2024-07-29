@@ -64,11 +64,11 @@ export default function Terminal({ game }: TerminalProps) {
 
   useEffect(() => {
     game.feedbackOutputAdapter = getOutputAdapter(setFeedbackOutput, false);
-  }, [feedbackOutput]);
+  }, []);
 
   useEffect(() => {
     game.narrativeOutputAdapter = getOutputAdapter(setNarrativeOutput, true);
-  }, [narrativeOutput]);
+  }, []);
 
   /**
    * An explicit adapter for the player prompt is not needed since the prompt
