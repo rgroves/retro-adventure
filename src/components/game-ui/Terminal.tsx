@@ -132,6 +132,7 @@ export default function Terminal({ game }: TerminalProps) {
             {playerPrompt && <Text ref={playerPromptRef}>{playerPrompt}</Text>}
           </ScrollView>
           <TerminalInput
+            game={game}
             playerInputProcessor={game.processInput.bind(game)}
             disabled={inputDisabled}
             setDisabled={setInputDisabled}

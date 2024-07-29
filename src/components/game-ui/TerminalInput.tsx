@@ -1,8 +1,11 @@
 import { Input } from "@aws-amplify/ui-react";
 import { PlayerCommandStatus } from "../../game/PlayerInputParser";
 import { PlayerInputParser } from "../../game/types";
+import { Game } from "../../game/Game";
+import { GameOverState } from "../../game/states";
 
 type CommandLineProps = {
+  game: Game;
   playerInputProcessor: PlayerInputParser;
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
@@ -12,6 +15,7 @@ type CommandLineProps = {
 };
 
 export default function TerminalInput({
+  game,
   playerInputProcessor,
   disabled,
   setDisabled,
@@ -33,7 +37,9 @@ export default function TerminalInput({
       setInputFeedback("");
     }
 
-    setDisabled(false);
+    if (!(game.state instanceof GameOverState)) {
+      setDisabled(false);
+    }
   };
 
   return (

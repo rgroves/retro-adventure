@@ -58,7 +58,6 @@ export class EndSceneState extends GameState {
 
 export class GameOverState extends GameState {
   override endGame(): void {
-    // TODO: disable UI input
     // TOOD: player / story / score to AWS Dynamo DB
   }
 }
