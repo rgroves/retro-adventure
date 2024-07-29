@@ -28,8 +28,9 @@ export default function TerminalInput({
       setInputFeedback("Invalid command");
     } else {
       // TODO remove this log msg
-      console.log(`Valid ${command.name} of [${command.item}]`);
+      console.log(`Valid ${command.name} of [${command.target}]`);
       setPlayerInput("");
+      setInputFeedback("");
     }
 
     setDisabled(false);

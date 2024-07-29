@@ -1,3 +1,4 @@
+import Exit, { ExitDirection } from "./Exit";
 import { Item } from "./Item";
 import { ParsedPlayerCommand } from "./ParsedPlayerCommand";
 import {
@@ -6,7 +7,7 @@ import {
   PlayerInputParser,
 } from "./PlayerInputParser";
 import { Scene } from "./Scene";
-import { type GameState, ReadyState } from "./states";
+import { EndSceneState, type GameState, ReadyState } from "./states";
 
 type OutputAdapter = (output: string[], clear?: boolean) => void;
 type PlayerPromptAdapter = React.Dispatch<React.SetStateAction<string>>;
@@ -69,6 +70,7 @@ export class Game {
       id: "-1",
       name: "NullScene",
       description: "ERROR",
+      exits: new Map(),
       items: new Map(),
     });
     this._feedbackOutputAdapter = null;
@@ -114,12 +116,45 @@ export class Game {
       switch (playerCommand.name) {
         case PlayerCommand.EXAMINE: {
           const item =
-            this.currentScene.items.get(playerCommand.item) ||
-            this.inventory.get(playerCommand.item);
+            this.currentScene.items.get(playerCommand.target) ||
+            this.inventory.get(playerCommand.target);
           if (item && item.isExaminable) {
             playerCommand.message = item.examineMessage;
             this.score += item.examinePointValue;
             this.feedbackOutputAdapter([playerCommand.message, ""], true);
+          } else {
+            playerCommand.status = PlayerCommandStatus.INVALID;
+            playerCommand.message = "You can't do that.";
+            this.feedbackOutputAdapter([playerCommand.message, ""], true);
+          }
+          break;
+        }
+
+        case PlayerCommand.GO: {
+          const exit = this.currentScene.exits.get(
+            ExitDirection[
+              playerCommand.target.toUpperCase() as keyof typeof ExitDirection
+            ]
+          );
+          console.log("GO'ing");
+          console.log({ exit });
+          console.log({ target: playerCommand.target });
+          console.log({
+            exitDir:
+              ExitDirection[
+                playerCommand.target.toUpperCase() as keyof typeof ExitDirection
+              ],
+          });
+          if (exit) {
+            const nextScene = this.scenes.find(
+              (scene) => scene.id === exit.sceneId
+            );
+            if (!nextScene) {
+              throw new Error(`Could not find Scene with id ${exit.sceneId}`);
+            }
+            console.log({ nextScene });
+            this.state = new EndSceneState(this);
+            this.state.transitionScene(nextScene);
           } else {
             playerCommand.status = PlayerCommandStatus.INVALID;
             playerCommand.message = "You can't do that.";
@@ -158,9 +193,9 @@ export class Game {
         }
 
         case PlayerCommand.TAKE: {
-          const item = this.currentScene.items.get(playerCommand.item);
+          const item = this.currentScene.items.get(playerCommand.target);
           if (item && item.isTakeable) {
-            this.currentScene.items.delete(playerCommand.item);
+            this.currentScene.items.delete(playerCommand.target);
             this.inventory.set(item.name.toLowerCase(), item);
             playerCommand.message = item.takenMessage;
             this.score += item.takenPointValue;
@@ -193,13 +228,30 @@ export class Game {
           name: "Stranger in a Strange Land",
           description:
             "You find yourself standing in the middle of a strange room. A portal, glowing neon green, can be seen to the east. Another portal, glowing neon red, can be seen to the west. There is a strange looking gun on the ground neear your feet.",
+          exits: new Map([
+            [
+              ExitDirection.EAST,
+              new Exit({
+                direction: ExitDirection.EAST,
+                sceneId: "586fcbcd-694b-437f-8cd9-5a8a11f54793",
+              }),
+            ],
+            [
+              ExitDirection.WEST,
+              new Exit({
+                direction: ExitDirection.WEST,
+                sceneId: "f5e683b7-bf4a-47b3-b4ff-00e5339d590d",
+              }),
+            ],
+          ]),
           items: new Map([
             [
               "gun",
               new Item({
                 id: crypto.randomUUID(),
                 name: "Ray Gun",
-                sceneDescFragment: " There is a widget here.",
+                sceneDescFragment:
+                  " There is a strange looking gun on the ground neear your feet.",
                 isTakeable: true,
                 takenPointValue: 25,
                 isExaminable: true,
@@ -209,6 +261,23 @@ export class Game {
               }),
             ],
           ]),
+        }),
+        new Scene({
+          id: "586fcbcd-694b-437f-8cd9-5a8a11f54793",
+          name: "Green Means Go",
+          description:
+            "As you step into the green portal, you're skin begins to tingle and then there is a brilliant flash of light.",
+          exits: new Map(),
+          items: new Map(),
+        }),
+        new Scene({
+          id: "f5e683b7-bf4a-47b3-b4ff-00e5339d590d",
+          name: "Red Means Dead",
+          description:
+            "You immediately realize this was a huge mistake. As your skin begins to peel and your muscle and bone tear apart, your final thought is that, luckily, this will be the last mistake you'll ever make.",
+          prompt: "Game Over",
+          exits: new Map(),
+          items: new Map(),
         }),
       ]
     );

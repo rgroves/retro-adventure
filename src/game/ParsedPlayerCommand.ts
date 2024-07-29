@@ -1,13 +1,13 @@
 export class ParsedPlayerCommand {
   public status: string;
   public name: string;
-  public item: string;
+  public target: string;
   public message: string;
 
-  constructor({ status, name, item, message }: ParsedPlayerCommand) {
+  constructor({ status, name, target, message }: ParsedPlayerCommand) {
     this.status = status;
     this.name = name;
-    this.item = item;
+    this.target = target;
     this.message = message;
   }
 }

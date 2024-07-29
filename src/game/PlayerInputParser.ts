@@ -7,6 +7,7 @@ export enum PlayerCommandStatus {
 
 export enum PlayerCommand {
   EXAMINE = "examine",
+  GO = "go",
   INVENTORY = "inventory",
   LOOK = "look",
   SCORE = "score",
@@ -16,6 +17,7 @@ export enum PlayerCommand {
 export class PlayerInputParser {
   private static _commandPatternMap = new Map<PlayerCommand, RegExp>([
     [PlayerCommand.EXAMINE, /^\s*examine\s+(\w+|(\w+ \w+)+)\s*$/i],
+    [PlayerCommand.GO, /^\s*go\s+((north)|(east)|(south)|(west))\s*$/i],
     [PlayerCommand.INVENTORY, /^\s*inventory\s*$/i],
     [PlayerCommand.LOOK, /^\s*look\s*$/i],
     [PlayerCommand.SCORE, /^\s*score\s*$/i],
@@ -26,7 +28,7 @@ export class PlayerInputParser {
     let matched = new ParsedPlayerCommand({
       status: PlayerCommandStatus.INVALID,
       name: "",
-      item: "",
+      target: "",
       message: "",
     });
 
@@ -37,7 +39,7 @@ export class PlayerInputParser {
         matched = new ParsedPlayerCommand({
           status: PlayerCommandStatus.VALID,
           name,
-          item: match[1],
+          target: match[1],
           message: "",
         });
       }
