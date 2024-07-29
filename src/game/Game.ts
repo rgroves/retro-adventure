@@ -112,7 +112,23 @@ export class Game {
   processPlayerCommand(playerCommand: ParsedPlayerCommand) {
     if (playerCommand.status === PlayerCommandStatus.VALID) {
       switch (playerCommand.name) {
-        case PlayerCommand.INVENTORY:
+        case PlayerCommand.EXAMINE: {
+          const item =
+            this.currentScene.items.get(playerCommand.item) ||
+            this.inventory.get(playerCommand.item);
+          if (item && item.isExaminable) {
+            playerCommand.message = item.examineMessage;
+            this.score += item.examinePointValue;
+            this.feedbackOutputAdapter([playerCommand.message, ""], true);
+          } else {
+            playerCommand.status = PlayerCommandStatus.INVALID;
+            playerCommand.message = "You can't do that.";
+            this.feedbackOutputAdapter([playerCommand.message, ""], true);
+          }
+          break;
+        }
+
+        case PlayerCommand.INVENTORY: {
           const inventoryOutput: string[] = [];
           if (this.inventory.size > 0) {
             inventoryOutput.push("The following items are in your inventory:");
@@ -126,23 +142,26 @@ export class Game {
           }
           this.feedbackOutputAdapter([...inventoryOutput, ""], true);
           break;
+        }
 
-        case PlayerCommand.LOOK:
+        case PlayerCommand.LOOK: {
           this.narrativeOutputAdapter(
             [this.currentScene.description, ""],
             true
           );
           break;
+        }
 
-        case PlayerCommand.SCORE:
+        case PlayerCommand.SCORE: {
           this.feedbackOutputAdapter([`Score: ${this.score}`, ""], true);
           break;
+        }
 
-        case PlayerCommand.TAKE:
+        case PlayerCommand.TAKE: {
           const item = this.currentScene.items.get(playerCommand.item);
           if (item && item.isTakeable) {
             this.currentScene.items.delete(playerCommand.item);
-            this.inventory.set(item.name, item);
+            this.inventory.set(item.name.toLowerCase(), item);
             playerCommand.message = item.takenMessage;
             this.score += item.takenPointValue;
             this.feedbackOutputAdapter([playerCommand.message, ""], true);
@@ -154,6 +173,7 @@ export class Game {
             this.feedbackOutputAdapter([playerCommand.message, ""], true);
           }
           break;
+        }
 
         default:
           throw new Error("Invalid command processing state encountered.");
@@ -170,18 +190,22 @@ export class Game {
       ...[
         new Scene({
           id: "36489ebf-498d-4cf5-8b17-33e1a568c1d2",
-          name: "Scene 1 Placeholder",
-          description: "This is a scene description. There is a widget here.",
+          name: "Stranger in a Strange Land",
+          description:
+            "You find yourself standing in the middle of a strange room. A portal, glowing neon green, can be seen to the east. Another portal, glowing neon red, can be seen to the west. There is a strange looking gun on the ground neear your feet.",
           items: new Map([
             [
-              "widget",
+              "gun",
               new Item({
                 id: crypto.randomUUID(),
-                name: "widget",
+                name: "Ray Gun",
                 sceneDescFragment: " There is a widget here.",
                 isTakeable: true,
                 takenPointValue: 25,
-                takenMessage: "You take the widget. It is very widget-y.",
+                isExaminable: true,
+                takenMessage: "You take the gun.",
+                examinePointValue: 5,
+                examineMessage: "It seems to be a 1950's retro-style ray gun.",
               }),
             ],
           ]),
