@@ -7,11 +7,13 @@ export enum PlayerCommandStatus {
 
 export enum PlayerCommand {
   TAKE = "take",
+  INVENTORY = "inventory",
 }
 
 export class PlayerInputParser {
   private static _commandPatternMap = new Map<PlayerCommand, RegExp>([
-    [PlayerCommand.TAKE, /^take\s+(\w+|(\w+ \w+)+)\s*$/i],
+    [PlayerCommand.TAKE, /^\s*take\s+(\w+|(\w+ \w+)+)\s*$/i],
+    [PlayerCommand.INVENTORY, /^\s*inventory\s*$/i],
   ]);
 
   parse(input: string): ParsedPlayerCommand {

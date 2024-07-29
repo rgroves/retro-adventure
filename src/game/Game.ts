@@ -1,6 +1,10 @@
 import { Item } from "./Item";
 import { ParsedPlayerCommand } from "./ParsedPlayerCommand";
-import { PlayerCommandStatus, PlayerInputParser } from "./PlayerInputParser";
+import {
+  PlayerCommand,
+  PlayerCommandStatus,
+  PlayerInputParser,
+} from "./PlayerInputParser";
 import { Scene } from "./Scene";
 import { type GameState, ReadyState } from "./states";
 
@@ -10,6 +14,7 @@ type PlayerPromptAdapter = React.Dispatch<React.SetStateAction<string>>;
 export class Game {
   public currentScene: Scene;
   public state: GameState;
+  public inventory: Map<string, Item>;
 
   get playerInputParser() {
     return this._playerInputParser;
@@ -58,6 +63,7 @@ export class Game {
     this.state = new ReadyState(this);
     this._playerInputParser = new PlayerInputParser();
     this._scenes = this.loadScenes();
+    this.inventory = new Map();
   }
 
   changeState(state: GameState) {
@@ -84,15 +90,34 @@ export class Game {
 
   processPlayerCommand(playerCommand: ParsedPlayerCommand) {
     if (playerCommand.status === PlayerCommandStatus.VALID) {
-      const item = this.currentScene.items.get(playerCommand.item);
-      if (item && item.isTakeable) {
-        this.currentScene.items.delete(playerCommand.item);
-        playerCommand.message = item.takenMessage;
-        this.outputAdapter([playerCommand.message, ""]);
-      } else {
-        playerCommand.status = PlayerCommandStatus.INVALID;
-        playerCommand.message = "You can't do that.";
-        this.outputAdapter([playerCommand.message, ""]);
+      switch (playerCommand.name) {
+        case PlayerCommand.TAKE:
+          const item = this.currentScene.items.get(playerCommand.item);
+          if (item && item.isTakeable) {
+            this.currentScene.items.delete(playerCommand.item);
+            this.inventory.set(item.name, item);
+            playerCommand.message = item.takenMessage;
+            this.outputAdapter([playerCommand.message, ""]);
+          } else {
+            playerCommand.status = PlayerCommandStatus.INVALID;
+            playerCommand.message = "You can't do that.";
+            this.outputAdapter([playerCommand.message, ""]);
+          }
+          break;
+        case PlayerCommand.INVENTORY:
+          const inventoryOutput: string[] = [];
+          if (this.inventory.size > 0) {
+            inventoryOutput.push("The following items are in your inventory:");
+            this.inventory.forEach((item) =>
+              inventoryOutput.push(
+                `${item.name} ${item.qty > 1 ? `(x${item.qty}` : ""}`
+              )
+            );
+          } else {
+            inventoryOutput.push("Your inventory is empty.");
+          }
+          this.outputAdapter([...inventoryOutput, ""]);
+          break;
       }
     }
 
