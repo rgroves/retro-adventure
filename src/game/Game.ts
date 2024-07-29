@@ -76,7 +76,7 @@ export class Game {
     this._playerPromptAdapter = null;
     this.state = new ReadyState(this);
     this._playerInputParser = new PlayerInputParser();
-    this._scenes = this.loadScenes();
+    this._scenes = [];
     this.inventory = new Map();
     this.score = 0;
   }
@@ -89,6 +89,7 @@ export class Game {
   initialize() {
     this.score = 0;
     this.inventory = new Map();
+    this._scenes = this.loadScenes();
   }
 
   start() {
