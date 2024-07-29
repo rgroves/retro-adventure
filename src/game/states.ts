@@ -32,7 +32,10 @@ export abstract class GameState {
 export class ReadyState extends GameState {
   override startGame(): void {
     this.game.currentScene = this.game.scenes[0];
-    this.game.outputAdapter([this.game.currentScene.description, ""], true);
+    this.game.narrativeOutputAdapter(
+      [this.game.currentScene.description, ""],
+      true
+    );
     this.game.playerPromptAdapter(this.game.currentScene.prompt);
     this.game.changeState(new AwaitingInputState(this.game));
   }

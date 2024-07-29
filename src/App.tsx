@@ -4,14 +4,17 @@ import "./App.css";
 import BaseLayout from "./components/BaseLayout";
 import Terminal from "./components/game-ui/Terminal";
 import { Game } from "./game/Game";
+import { useRef } from "react";
 
 Amplify.configure(outputs);
 const game = new Game();
 
 function App() {
+  const gameRef = useRef(game);
+
   return (
     <BaseLayout>
-      <Terminal game={game} />
+      <Terminal game={gameRef.current} />
     </BaseLayout>
   );
 }

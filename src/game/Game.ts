@@ -21,15 +21,26 @@ export class Game {
     return this._playerInputParser;
   }
 
-  get outputAdapter(): OutputAdapter {
-    if (!this._outputAdapter) {
-      throw new Error("The Game.outputAdapter is not initialized!");
+  get feedbackOutputAdapter(): OutputAdapter {
+    if (!this._feedbackOutputAdapter) {
+      throw new Error("The Game.feedbackOutputAdapter is not initialized!");
     }
-    return this._outputAdapter;
+    return this._feedbackOutputAdapter;
   }
 
-  set outputAdapter(callback: OutputAdapter) {
-    this._outputAdapter = callback;
+  set feedbackOutputAdapter(callback: OutputAdapter) {
+    this._feedbackOutputAdapter = callback;
+  }
+
+  get narrativeOutputAdapter(): OutputAdapter {
+    if (!this._narrativeOutputAdapter) {
+      throw new Error("The Game.narrativeOutputAdapter is not initialized!");
+    }
+    return this._narrativeOutputAdapter;
+  }
+
+  set narrativeOutputAdapter(callback: OutputAdapter) {
+    this._narrativeOutputAdapter = callback;
   }
 
   get playerPromptAdapter() {
@@ -47,7 +58,8 @@ export class Game {
     return this._scenes;
   }
 
-  private _outputAdapter: OutputAdapter | null;
+  private _feedbackOutputAdapter: OutputAdapter | null;
+  private _narrativeOutputAdapter: OutputAdapter | null;
   private _playerInputParser: PlayerInputParser;
   private _playerPromptAdapter: PlayerPromptAdapter | null;
   private _scenes: Scene[];
@@ -59,7 +71,8 @@ export class Game {
       description: "ERROR",
       items: new Map(),
     });
-    this._outputAdapter = null;
+    this._feedbackOutputAdapter = null;
+    this._narrativeOutputAdapter = null;
     this._playerPromptAdapter = null;
     this.state = new ReadyState(this);
     this._playerInputParser = new PlayerInputParser();
@@ -71,6 +84,11 @@ export class Game {
   changeState(state: GameState) {
     this.state = state;
     console.log(`State has changed to ${state.constructor.name}`);
+  }
+
+  initialize() {
+    this.score = 0;
+    this.inventory = new Map();
   }
 
   start() {
@@ -100,11 +118,11 @@ export class Game {
             this.inventory.set(item.name, item);
             playerCommand.message = item.takenMessage;
             this.score += item.takenPointValue;
-            this.outputAdapter([playerCommand.message, ""]);
+            this.feedbackOutputAdapter([playerCommand.message, ""], true);
           } else {
             playerCommand.status = PlayerCommandStatus.INVALID;
             playerCommand.message = "You can't do that.";
-            this.outputAdapter([playerCommand.message, ""]);
+            this.feedbackOutputAdapter([playerCommand.message, ""], true);
           }
           break;
 
@@ -120,11 +138,11 @@ export class Game {
           } else {
             inventoryOutput.push("Your inventory is empty.");
           }
-          this.outputAdapter([...inventoryOutput, ""]);
+          this.feedbackOutputAdapter([...inventoryOutput, ""], true);
           break;
 
         case PlayerCommand.SCORE:
-          this.outputAdapter([`Score: ${this.score}`, ""]);
+          this.feedbackOutputAdapter([`Score: ${this.score}`, ""], true);
           break;
       }
     }
