@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Input, Text } from "@aws-amplify/ui-react";
+import { Input } from "@aws-amplify/ui-react";
 import { PlayerCommandStatus } from "../../game/PlayerInputParser";
 import { PlayerInputParser } from "../../game/types";
 
@@ -7,25 +6,29 @@ type CommandLineProps = {
   playerInputProcessor: PlayerInputParser;
   disabled: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
+  setInputFeedback: React.Dispatch<React.SetStateAction<string>>;
+  playerInput: string;
+  setPlayerInput: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export default function TerminalInput({
   playerInputProcessor,
   disabled,
   setDisabled,
+  setInputFeedback,
+  playerInput,
+  setPlayerInput,
 }: CommandLineProps) {
-  const [playerInput, setPlayerInput] = useState("");
-  const [inputFeedback, setInputFeedback] = useState("");
-
   const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setDisabled(true);
     const command = playerInputProcessor(playerInput);
 
     if (command.status === PlayerCommandStatus.INVALID) {
-      setInputFeedback(`Invalid command`);
+      setInputFeedback("Invalid command");
     } else {
-      setInputFeedback(`Valid ${command.name} of [${command.item}]`);
+      // TODO remove this log msg
+      console.log(`Valid ${command.name} of [${command.item}]`);
       setPlayerInput("");
     }
 
@@ -44,9 +47,6 @@ export default function TerminalInput({
           value={playerInput}
         />
       </form>
-      <Text minHeight="1lh" id="cmd-feedback">
-        {inputFeedback}
-      </Text>
     </>
   );
 }
