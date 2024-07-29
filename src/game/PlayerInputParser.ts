@@ -6,16 +6,18 @@ export enum PlayerCommandStatus {
 }
 
 export enum PlayerCommand {
-  TAKE = "take",
   INVENTORY = "inventory",
+  LOOK = "look",
   SCORE = "score",
+  TAKE = "take",
 }
 
 export class PlayerInputParser {
   private static _commandPatternMap = new Map<PlayerCommand, RegExp>([
-    [PlayerCommand.TAKE, /^\s*take\s+(\w+|(\w+ \w+)+)\s*$/i],
     [PlayerCommand.INVENTORY, /^\s*inventory\s*$/i],
+    [PlayerCommand.LOOK, /^\s*look\s*$/i],
     [PlayerCommand.SCORE, /^\s*score\s*$/i],
+    [PlayerCommand.TAKE, /^\s*take\s+(\w+|(\w+ \w+)+)\s*$/i],
   ]);
 
   parse(input: string): ParsedPlayerCommand {

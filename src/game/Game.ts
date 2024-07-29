@@ -112,21 +112,6 @@ export class Game {
   processPlayerCommand(playerCommand: ParsedPlayerCommand) {
     if (playerCommand.status === PlayerCommandStatus.VALID) {
       switch (playerCommand.name) {
-        case PlayerCommand.TAKE:
-          const item = this.currentScene.items.get(playerCommand.item);
-          if (item && item.isTakeable) {
-            this.currentScene.items.delete(playerCommand.item);
-            this.inventory.set(item.name, item);
-            playerCommand.message = item.takenMessage;
-            this.score += item.takenPointValue;
-            this.feedbackOutputAdapter([playerCommand.message, ""], true);
-          } else {
-            playerCommand.status = PlayerCommandStatus.INVALID;
-            playerCommand.message = "You can't do that.";
-            this.feedbackOutputAdapter([playerCommand.message, ""], true);
-          }
-          break;
-
         case PlayerCommand.INVENTORY:
           const inventoryOutput: string[] = [];
           if (this.inventory.size > 0) {
@@ -142,9 +127,36 @@ export class Game {
           this.feedbackOutputAdapter([...inventoryOutput, ""], true);
           break;
 
+        case PlayerCommand.LOOK:
+          this.narrativeOutputAdapter(
+            [this.currentScene.description, ""],
+            true
+          );
+          break;
+
         case PlayerCommand.SCORE:
           this.feedbackOutputAdapter([`Score: ${this.score}`, ""], true);
           break;
+
+        case PlayerCommand.TAKE:
+          const item = this.currentScene.items.get(playerCommand.item);
+          if (item && item.isTakeable) {
+            this.currentScene.items.delete(playerCommand.item);
+            this.inventory.set(item.name, item);
+            playerCommand.message = item.takenMessage;
+            this.score += item.takenPointValue;
+            this.feedbackOutputAdapter([playerCommand.message, ""], true);
+            this.currentScene.description =
+              this.currentScene.description.replace(item.sceneDescFragment, "");
+          } else {
+            playerCommand.status = PlayerCommandStatus.INVALID;
+            playerCommand.message = "You can't do that.";
+            this.feedbackOutputAdapter([playerCommand.message, ""], true);
+          }
+          break;
+
+        default:
+          throw new Error("Invalid command processing state encountered.");
       }
     }
 
@@ -166,6 +178,7 @@ export class Game {
               new Item({
                 id: crypto.randomUUID(),
                 name: "widget",
+                sceneDescFragment: " There is a widget here.",
                 isTakeable: true,
                 takenPointValue: 25,
                 takenMessage: "You take the widget. It is very widget-y.",

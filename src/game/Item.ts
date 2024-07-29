@@ -1,6 +1,7 @@
 export class Item {
   public id: string;
   public name: string;
+  public sceneDescFragment: string;
   public isTakeable: boolean;
   public takenPointValue: number;
   public takenMessage: string;
@@ -9,6 +10,7 @@ export class Item {
   constructor({
     id,
     name,
+    sceneDescFragment = "",
     isTakeable = false,
     takenPointValue = 0,
     takenMessage = "",
@@ -23,6 +25,14 @@ export class Item {
     if (typeof name !== "string" || !name) {
       throw Error(
         `Invalid name in item properties ${JSON.stringify(arguments[0])}`
+      );
+    }
+
+    if (typeof sceneDescFragment !== "string" || !name) {
+      throw Error(
+        `Invalid sceneDescFragment in item properties ${JSON.stringify(
+          arguments[0]
+        )}`
       );
     }
 
@@ -50,6 +60,7 @@ export class Item {
 
     this.id = crypto.randomUUID();
     this.name = name;
+    this.sceneDescFragment = sceneDescFragment;
     this.isTakeable = isTakeable;
     this.takenPointValue = takenPointValue;
     this.takenMessage = takenMessage;
