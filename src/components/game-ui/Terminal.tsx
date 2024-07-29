@@ -36,7 +36,7 @@ export default function Terminal({ game }: TerminalProps) {
    * by the Game engine and manipulating it so that it is properly renderable
    * in the Terminal, optionally clearing any previously received output.
    */
-  function gameOutputAdapter(output: string[], clear: boolean) {
+  function gameOutputAdapter(output: string[], clear: boolean = false) {
     const renderableOutput = [
       ...output.map((str) => (
         <Text key={crypto.randomUUID()}>{str ? str : <>&nbsp;</>}</Text>
@@ -52,7 +52,7 @@ export default function Terminal({ game }: TerminalProps) {
         ]);
   }
 
-  game.setOutputAdapter(gameOutputAdapter);
+  game.outputAdapter = gameOutputAdapter;
 
   /**
    * An explicit adapter for the player prompt is not needed since the prompt
@@ -60,7 +60,7 @@ export default function Terminal({ game }: TerminalProps) {
    * last Text line in the Terminal output and doesn't need to be transformed or
    * wrapped by a JSX element.
    */
-  game.setPlayerPromptAdapter(setPlayerPrompt);
+  game.playerPromptAdapter = setPlayerPrompt;
 
   const terminalWindowRef = useRef<HTMLDivElement>(null);
   const playerPromptRef = useRef<HTMLParagraphElement>(null);
@@ -80,12 +80,17 @@ export default function Terminal({ game }: TerminalProps) {
     } else {
       setTerminalOutput([]);
       setPlayerPrompt("");
+      game.stop();
     }
   };
 
   return (
     <Flex justifyContent={"space-around"}>
-      <View fontFamily="monospace" fontSize={tokens.fontSizes.medium} width={`${TERMINAL_WIDTH}ch`}>
+      <View
+        fontFamily="monospace"
+        fontSize={tokens.fontSizes.medium}
+        width={`${TERMINAL_WIDTH}ch`}
+      >
         <Flex direction="column" gap="0" minHeight="100%">
           <ScrollView
             ref={terminalWindowRef}

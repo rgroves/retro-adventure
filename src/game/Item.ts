@@ -1,13 +1,17 @@
 export class Item {
   public id: string;
   public name: string;
+  public isTakeable: boolean;
+  public takenMessage: string;
   public qty: number;
 
   constructor({
     id,
     name,
+    isTakeable = false,
+    takenMessage = "",
     qty = 1,
-  }: Omit<Item, "qty"> & Partial<Pick<Item, "qty">>) {
+  }: Omit<Item, "qty"> & Partial<Item>) {
     if (typeof id !== "string" || !id) {
       throw Error(
         `Invalid id in scene properties ${JSON.stringify(arguments[0])}`
@@ -20,6 +24,14 @@ export class Item {
       );
     }
 
+    if (typeof takenMessage !== "string") {
+      throw Error(
+        `Invalid takenMessage in item properties ${JSON.stringify(
+          arguments[0]
+        )}`
+      );
+    }
+
     if (typeof qty !== "number" || qty < 1) {
       throw Error(
         `Invalid qty in item properties ${JSON.stringify(arguments[0])}`
@@ -28,6 +40,8 @@ export class Item {
 
     this.id = crypto.randomUUID();
     this.name = name;
+    this.isTakeable = isTakeable;
+    this.takenMessage = takenMessage;
     this.qty = qty;
   }
 }

@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Input, Text } from "@aws-amplify/ui-react";
-import { PlayerInputProcessor } from "../../game/types";
+import { PlayerCommandStatus } from "../../game/PlayerInputParser";
+import { PlayerInputParser } from "../../game/types";
 
 type CommandLineProps = {
-  playerInputProcessor: PlayerInputProcessor;
+  playerInputProcessor: PlayerInputParser;
 };
 
 export default function TerminalInput({
@@ -16,7 +17,7 @@ export default function TerminalInput({
     event.preventDefault();
     const command = playerInputProcessor(playerInput);
 
-    if (command.status === "invalid") {
+    if (command.status === PlayerCommandStatus.INVALID) {
       setInputFeedback(`Invalid command`);
     } else {
       setInputFeedback(`Valid ${command.name} of [${command.item}]`);
