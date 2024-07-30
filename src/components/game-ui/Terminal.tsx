@@ -111,7 +111,6 @@ export default function Terminal({ game }: TerminalProps) {
   };
 
   return (
-    <Flex justifyContent={"space-around"}>
       <View
         fontFamily="monospace"
         fontSize={tokens.fontSizes.medium}
@@ -151,6 +150,5 @@ export default function Terminal({ game }: TerminalProps) {
           </Button>
         </Flex>
       </View>
-    </Flex>
   );
 }
