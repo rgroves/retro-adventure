@@ -130,7 +130,7 @@ export class Game {
   getHelp() {
     return [
       "Valid commands are as follows:",
-      "examine - Use to examine things in a scene",
+      "examine <item> - Use to examine things in a scene",
       "go <direction> - Use to move through scenes",
       "help - You're looking at it",
       "inventory - Show the items you've collected",
