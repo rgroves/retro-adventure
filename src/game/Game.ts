@@ -25,37 +25,37 @@ export class Game {
     return this._playerInputParser;
   }
 
-  get feedbackOutputAdapter(): OutputAdapter {
-    if (!this._feedbackOutputAdapter) {
-      throw new Error("The Game.feedbackOutputAdapter is not initialized!");
+  get setFeedbackOutput(): OutputAdapter {
+    if (!this._setFeedbackOutput) {
+      throw new Error("The feedback output adapter is not initialized!");
     }
-    return this._feedbackOutputAdapter;
+    return this._setFeedbackOutput;
   }
 
-  set feedbackOutputAdapter(callback: OutputAdapter) {
-    this._feedbackOutputAdapter = callback;
+  set setFeedbackOutput(callback: OutputAdapter) {
+    this._setFeedbackOutput = callback;
   }
 
-  get narrativeOutputAdapter(): OutputAdapter {
-    if (!this._narrativeOutputAdapter) {
-      throw new Error("The Game.narrativeOutputAdapter is not initialized!");
+  get setNarrativeOutput(): OutputAdapter {
+    if (!this._setNarrativeOutput) {
+      throw new Error("The narrative output adapter is not initialized!");
     }
-    return this._narrativeOutputAdapter;
+    return this._setNarrativeOutput;
   }
 
-  set narrativeOutputAdapter(callback: OutputAdapter) {
-    this._narrativeOutputAdapter = callback;
+  set setNarrativeOutput(callback: OutputAdapter) {
+    this._setNarrativeOutput = callback;
   }
 
-  get playerPromptAdapter() {
-    if (!this._playerPromptAdapter) {
-      throw new Error("The Game.playerPromptAdapter is not initialized!");
+  get setPlayerPrompt() {
+    if (!this._setPlayerPrompt) {
+      throw new Error("The player prompt adapter is not initialized!");
     }
-    return this._playerPromptAdapter;
+    return this._setPlayerPrompt;
   }
 
-  set playerPromptAdapter(callback: PlayerPromptAdapter) {
-    this._playerPromptAdapter = callback;
+  set setPlayerPrompt(callback: PlayerPromptAdapter) {
+    this._setPlayerPrompt = callback;
   }
 
   get scenes() {
@@ -69,10 +69,10 @@ export class Game {
     return this._state;
   }
 
-  private _feedbackOutputAdapter: OutputAdapter | null;
-  private _narrativeOutputAdapter: OutputAdapter | null;
+  private _setFeedbackOutput: OutputAdapter | null;
+  private _setNarrativeOutput: OutputAdapter | null;
   private _playerInputParser: PlayerInputParser;
-  private _playerPromptAdapter: PlayerPromptAdapter | null;
+  private _setPlayerPrompt: PlayerPromptAdapter | null;
   private _scenes: Scene[];
   private _state: GameState | null;
 
@@ -84,9 +84,9 @@ export class Game {
       exits: new Map(),
       items: new Map(),
     });
-    this._feedbackOutputAdapter = null;
-    this._narrativeOutputAdapter = null;
-    this._playerPromptAdapter = null;
+    this._setFeedbackOutput = null;
+    this._setNarrativeOutput = null;
+    this._setPlayerPrompt = null;
     this.changeState(new PoweredOnState(this));
     this._playerInputParser = new PlayerInputParser();
     this._scenes = [];
@@ -158,11 +158,11 @@ export class Game {
           if (item && item.isExaminable) {
             playerCommand.message = item.examineMessage;
             this.score += item.examinePointValue;
-            this.feedbackOutputAdapter([playerCommand.message, ""], true);
+            this.setFeedbackOutput([playerCommand.message, ""], true);
           } else {
             playerCommand.status = PlayerCommandStatus.INVALID;
             playerCommand.message = "You can't do that.";
-            this.feedbackOutputAdapter([playerCommand.message, ""], true);
+            this.setFeedbackOutput([playerCommand.message, ""], true);
           }
           break;
         }
@@ -180,19 +180,19 @@ export class Game {
             if (!nextScene) {
               throw new Error(`Could not find Scene with id ${exit.sceneId}`);
             }
-            this.feedbackOutputAdapter([playerCommand.message, ""], true);
+            this.setFeedbackOutput([playerCommand.message, ""], true);
             this.changeState(new StartSceneState(this));
             this.state.playScene(nextScene);
           } else {
             playerCommand.status = PlayerCommandStatus.INVALID;
             playerCommand.message = "You can't do that.";
-            this.feedbackOutputAdapter([playerCommand.message, ""], true);
+            this.setFeedbackOutput([playerCommand.message, ""], true);
           }
           break;
         }
 
         case PlayerCommand.HELP: {
-          this.feedbackOutputAdapter([...this.getHelp(), ""], true);
+          this.setFeedbackOutput([...this.getHelp(), ""], true);
           break;
         }
 
@@ -208,21 +208,18 @@ export class Game {
           } else {
             inventoryOutput.push("Your inventory is empty.");
           }
-          this.feedbackOutputAdapter([...inventoryOutput, ""], true);
+          this.setFeedbackOutput([...inventoryOutput, ""], true);
           break;
         }
 
         case PlayerCommand.LOOK: {
-          this.narrativeOutputAdapter(
-            [this.currentScene.description, ""],
-            true
-          );
-          this.feedbackOutputAdapter([playerCommand.message, ""], true);
+          this.setNarrativeOutput([this.currentScene.description, ""], true);
+          this.setFeedbackOutput([playerCommand.message, ""], true);
           break;
         }
 
         case PlayerCommand.SCORE: {
-          this.feedbackOutputAdapter([`Score: ${this.score}`, ""], true);
+          this.setFeedbackOutput([`Score: ${this.score}`, ""], true);
           break;
         }
 
@@ -233,13 +230,13 @@ export class Game {
             this.inventory.set(item.name.toLowerCase(), item);
             playerCommand.message = item.takenMessage;
             this.score += item.takenPointValue;
-            this.feedbackOutputAdapter([playerCommand.message, ""], true);
+            this.setFeedbackOutput([playerCommand.message, ""], true);
             this.currentScene.description =
               this.currentScene.description.replace(item.sceneDescFragment, "");
           } else {
             playerCommand.status = PlayerCommandStatus.INVALID;
             playerCommand.message = "You can't do that.";
-            this.feedbackOutputAdapter([playerCommand.message, ""], true);
+            this.setFeedbackOutput([playerCommand.message, ""], true);
           }
           break;
         }

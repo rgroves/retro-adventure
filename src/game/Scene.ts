@@ -76,4 +76,8 @@ export class Scene {
     this.exits = exits;
     this.items = items;
   }
+
+  getInitialSceneNarrative(): string[] {
+    return [`*** ${this.name} ***`, "", this.description, ""];
+  }
 }

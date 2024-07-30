@@ -68,13 +68,8 @@ export abstract class GameState {
 export class StartSceneState extends GameState {
   override playScene(scene: Scene, shouldClearScreen: boolean = false): void {
     this.game.currentScene = scene;
-    this.game.narrativeOutputAdapter(
-      [
-        `*** ${this.game.currentScene.name} ***`,
-        "",
-        this.game.currentScene.description,
-        "",
-      ],
+    this.game.setNarrativeOutput(
+      this.game.currentScene.getInitialSceneNarrative(),
       shouldClearScreen
     );
 
@@ -82,7 +77,7 @@ export class StartSceneState extends GameState {
       this.game.changeState(new GameOverState(this.game));
       this.game.state.endGame();
     } else {
-      this.game.playerPromptAdapter(this.game.currentScene.prompt);
+      this.game.setPlayerPrompt(this.game.currentScene.prompt);
       this.game.changeState(new AwaitingInputState(this.game));
     }
   }
@@ -90,8 +85,8 @@ export class StartSceneState extends GameState {
 
 export class GameOverState extends GameState {
   override endGame(): void {
-    this.game.feedbackOutputAdapter([`Score: ${this.game.score}`]);
-    this.game.playerPromptAdapter("Game Over");
+    this.game.setFeedbackOutput([`Score: ${this.game.score}`]);
+    this.game.setPlayerPrompt("Game Over");
     this.game.saveScore();
   }
 }

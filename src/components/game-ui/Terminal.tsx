@@ -63,11 +63,11 @@ export default function Terminal({ game }: TerminalProps) {
   }
 
   useEffect(() => {
-    game.feedbackOutputAdapter = getOutputAdapter(setFeedbackOutput, false);
+    game.setFeedbackOutput = getOutputAdapter(setFeedbackOutput, false);
   }, []);
 
   useEffect(() => {
-    game.narrativeOutputAdapter = getOutputAdapter(setNarrativeOutput, true);
+    game.setNarrativeOutput = getOutputAdapter(setNarrativeOutput, true);
   }, []);
 
   /**
@@ -76,7 +76,7 @@ export default function Terminal({ game }: TerminalProps) {
    * last Text line in the Terminal output and doesn't need to be transformed or
    * wrapped by a JSX element.
    */
-  game.playerPromptAdapter = setPlayerPrompt;
+  game.setPlayerPrompt = setPlayerPrompt;
 
   const terminalWindowRef = useRef<HTMLDivElement>(null);
   const playerPromptRef = useRef<HTMLParagraphElement>(null);
