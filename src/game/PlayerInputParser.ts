@@ -35,7 +35,7 @@ export class PlayerInputParser {
     PlayerInputParser._commandPatternMap.forEach((pattern, name) => {
       const match = pattern.exec(input);
       if (Array.isArray(match)) {
-        console.log(`matched ${name}: using ${match[1]}`);
+        // console.log(`matched ${name}: using ${match[1]}`);
         matched = new ParsedPlayerCommand({
           status: PlayerCommandStatus.VALID,
           name,

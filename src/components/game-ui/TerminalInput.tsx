@@ -31,8 +31,6 @@ export default function TerminalInput({
     if (command.status === PlayerCommandStatus.INVALID) {
       setInputFeedback("Invalid command");
     } else {
-      // TODO remove this log msg
-      console.log(`Valid ${command.name} of [${command.target}]`);
       setPlayerInput("");
       setInputFeedback("");
     }

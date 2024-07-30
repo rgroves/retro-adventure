@@ -52,13 +52,14 @@ export class EndSceneState extends GameState {
     } else {
       this.game.playerPromptAdapter("Game Over");
       this.game.changeState(new GameOverState(this.game));
+      this.game.state.endGame();
     }
   }
 }
 
 export class GameOverState extends GameState {
   override endGame(): void {
-    // TOOD: player / story / score to AWS Dynamo DB
+    this.game.saveScore();
   }
 }
 

@@ -11,21 +11,34 @@ import {
 
 export default function UserMenu() {
   const { user, signOut } = useAuthenticator((context) => [context.user]);
-  const [userNickname, setUserNickname] = useState("");
+  const [preferredUserName, setpreferredUserName] = useState("");
   const { tokens } = useTheme();
+
+  const signOutFlow = () => {
+    signOut();
+    localStorage.removeItem("preferred_username");
+    localStorage.removeItem("userSub");
+  };
 
   useEffect(() => {
     async function loadUserAttributes() {
       const attributes = await fetchUserAttributes();
-      setUserNickname(attributes.nickname || "");
+      const name = attributes.preferred_username || "unknown";
+      localStorage.setItem("preferred_username", name);
+      localStorage.setItem("userSub", attributes.sub || "");
+      setpreferredUserName(name);
     }
     loadUserAttributes();
-  }, [user]);
+  }, [user.userId]);
 
   return (
     <Flex justifyContent="flex-end" alignItems="center" gap={tokens.space.xl}>
-      {userNickname ? <Text>Welcome {userNickname}</Text> : <Loader />}
-      <Button size="small" onClick={signOut}>
+      {preferredUserName ? (
+        <Text>Welcome {preferredUserName}</Text>
+      ) : (
+        <Loader />
+      )}
+      <Button size="small" onClick={signOutFlow}>
         Sign out
       </Button>
     </Flex>

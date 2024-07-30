@@ -8,6 +8,10 @@ import {
 } from "./PlayerInputParser";
 import { Scene } from "./Scene";
 import { EndSceneState, type GameState, ReadyState } from "./states";
+import type { Schema } from "../../amplify/data/resource";
+import { generateClient } from "aws-amplify/data";
+
+const client = generateClient<Schema>();
 
 type OutputAdapter = (output: string[], clear?: boolean) => void;
 type PlayerPromptAdapter = React.Dispatch<React.SetStateAction<string>>;
@@ -85,7 +89,7 @@ export class Game {
 
   changeState(state: GameState) {
     this.state = state;
-    console.log(`State has changed to ${state.constructor.name}`);
+    // console.log(`State has changed to ${state.constructor.name}`);
   }
 
   initialize() {
@@ -94,7 +98,19 @@ export class Game {
     this._scenes = this.loadScenes();
   }
 
+  async saveScore() {
+    const userId = localStorage.getItem("userSub");
+    const username = localStorage.getItem("preferred_username");
+    const result = await client.models.HighScore.create({
+      userId: userId,
+      preferredUsername: username,
+      score: this.score,
+      stats: "{}",
+    });
+    console.dir({ result });
+  }
   start() {
+    this.state = new ReadyState(this);
     this.state.startGame();
   }
 
@@ -136,15 +152,6 @@ export class Game {
               playerCommand.target.toUpperCase() as keyof typeof ExitDirection
             ]
           );
-          console.log("GO'ing");
-          console.log({ exit });
-          console.log({ target: playerCommand.target });
-          console.log({
-            exitDir:
-              ExitDirection[
-                playerCommand.target.toUpperCase() as keyof typeof ExitDirection
-              ],
-          });
           if (exit) {
             const nextScene = this.scenes.find(
               (scene) => scene.id === exit.sceneId
@@ -152,7 +159,6 @@ export class Game {
             if (!nextScene) {
               throw new Error(`Could not find Scene with id ${exit.sceneId}`);
             }
-            console.log({ nextScene });
             this.state = new EndSceneState(this);
             this.state.transitionScene(nextScene);
           } else {
