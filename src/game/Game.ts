@@ -7,7 +7,12 @@ import {
   PlayerInputParser,
 } from "./PlayerInputParser";
 import { Scene } from "./Scene";
-import { StartSceneState, type GameState, PoweredOnState } from "./states";
+import {
+  type GameState,
+  PoweredOnState,
+  ExamineState,
+  GoState,
+} from "./states";
 import type { Schema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 
@@ -128,10 +133,6 @@ export class Game {
 
   processInput(rawInput: string): ParsedPlayerCommand {
     const parsedCmd = this.state.processInput(rawInput);
-    if (!parsedCmd) {
-      // This shouldn't happen, but if you're debugging and here, Murphy says, "Hi!"
-      throw Error("Something went wrong in command paring.");
-    }
     return parsedCmd;
   }
 
@@ -152,42 +153,14 @@ export class Game {
     if (playerCommand.status === PlayerCommandStatus.VALID) {
       switch (playerCommand.name) {
         case PlayerCommand.EXAMINE: {
-          const item =
-            this.currentScene.items.get(playerCommand.target) ||
-            this.inventory.get(playerCommand.target);
-          if (item && item.isExaminable) {
-            playerCommand.message = item.examineMessage;
-            this.score += item.examinePointValue;
-            this.setFeedbackOutput([playerCommand.message, ""], true);
-          } else {
-            playerCommand.status = PlayerCommandStatus.INVALID;
-            playerCommand.message = "You can't do that.";
-            this.setFeedbackOutput([playerCommand.message, ""], true);
-          }
+          this.changeState(new ExamineState(this));
+          this.state.processCommand(playerCommand);
           break;
         }
 
         case PlayerCommand.GO: {
-          const exit = this.currentScene.exits.get(
-            ExitDirection[
-              playerCommand.target.toUpperCase() as keyof typeof ExitDirection
-            ]
-          );
-          if (exit) {
-            const nextScene = this.scenes.find(
-              (scene) => scene.id === exit.sceneId
-            );
-            if (!nextScene) {
-              throw new Error(`Could not find Scene with id ${exit.sceneId}`);
-            }
-            this.setFeedbackOutput([playerCommand.message, ""], true);
-            this.changeState(new StartSceneState(this));
-            this.state.playScene(nextScene);
-          } else {
-            playerCommand.status = PlayerCommandStatus.INVALID;
-            playerCommand.message = "You can't do that.";
-            this.setFeedbackOutput([playerCommand.message, ""], true);
-          }
+          this.changeState(new GoState(this));
+          this.state.processCommand(playerCommand);
           break;
         }
 

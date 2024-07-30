@@ -18,7 +18,7 @@ export enum PlayerCommand {
 export class PlayerInputParser {
   private static _commandPatternMap = new Map<PlayerCommand, RegExp>([
     [PlayerCommand.EXAMINE, /^\s*examine\s+(\w+|(\w+ \w+)+)\s*$/i],
-    [PlayerCommand.GO, /^\s*go\s+((north)|(east)|(south)|(west))\s*$/i],
+    [PlayerCommand.GO, /^\s*go\s+(\w+)\s*$/i],
     [PlayerCommand.HELP, /^\s*help\s*$/i],
     [PlayerCommand.INVENTORY, /^\s*inventory\s*$/i],
     [PlayerCommand.LOOK, /^\s*look\s*$/i],

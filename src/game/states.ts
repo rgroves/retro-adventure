@@ -1,5 +1,7 @@
+import { ExitDirection } from "./Exit";
 import { type Game } from "./Game";
 import { type ParsedPlayerCommand } from "./ParsedPlayerCommand";
+import { PlayerCommandStatus } from "./PlayerInputParser";
 import { Scene } from "./Scene";
 
 /**
@@ -52,11 +54,11 @@ export abstract class GameState {
     throw new Error("Method not implemented.");
   }
 
-  processInput(_playerInput: string): ParsedPlayerCommand | void {
+  processCommand(_command: ParsedPlayerCommand): void {
     throw new Error("Method not implemented.");
   }
 
-  processTakeCommand(): void {
+  processInput(_playerInput: string): ParsedPlayerCommand {
     throw new Error("Method not implemented.");
   }
 
@@ -104,5 +106,52 @@ export class AwaitingInputState extends GameState {
     const playerCommand = this.game.playerInputParser.parse(playerInput);
     this.game.processPlayerCommand(playerCommand);
     return playerCommand;
+  }
+}
+
+export class ExamineState extends GameState {
+  override processCommand(command: ParsedPlayerCommand): void {
+    const item =
+      this.game.currentScene.items.get(command.target) ||
+      this.game.inventory.get(command.target);
+
+    if (item && item.isExaminable) {
+      command.message = item.examineMessage;
+      this.game.score += item.examinePointValue;
+      this.game.setFeedbackOutput([command.message, ""], true);
+    } else {
+      command.status = PlayerCommandStatus.INVALID;
+      command.message = "You can't do that.";
+      this.game.setFeedbackOutput([command.message, ""], true);
+    }
+
+    this.game.changeState(new AwaitingInputState(this.game));
+  }
+}
+
+export class GoState extends GameState {
+  override processCommand(command: ParsedPlayerCommand): void {
+    const direction =
+      command.target.toUpperCase() as keyof typeof ExitDirection;
+
+    const exit = this.game.currentScene.exits.get(ExitDirection[direction]);
+
+    if (exit) {
+      const nextScene = this.game.scenes.find(
+        (scene) => scene.id === exit.sceneId
+      );
+
+      if (!nextScene) {
+        throw new Error(`Could not find Scene with id ${exit.sceneId}`);
+      }
+
+      this.game.setFeedbackOutput([command.message, ""], true);
+      this.game.changeState(new StartSceneState(this.game));
+      this.game.state.playScene(nextScene);
+    } else {
+      command.message = "You can't go there.";
+      this.game.setFeedbackOutput([command.message, ""], true);
+      this.game.changeState(new AwaitingInputState(this.game));
+    }
   }
 }

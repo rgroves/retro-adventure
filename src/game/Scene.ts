@@ -80,4 +80,9 @@ export class Scene {
   getInitialSceneNarrative(): string[] {
     return [`*** ${this.name} ***`, "", this.description, ""];
   }
+
+  getItem(name: string): Item | undefined {
+    const item = this.items.get(name);
+    return item
+  }
 }
