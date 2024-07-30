@@ -50,6 +50,7 @@ export class EndSceneState extends GameState {
       this.game.playerPromptAdapter(this.game.currentScene.prompt);
       this.game.changeState(new AwaitingInputState(this.game));
     } else {
+      this.game.feedbackOutputAdapter([`Score: ${this.game.score}`]);
       this.game.playerPromptAdapter("Game Over");
       this.game.changeState(new GameOverState(this.game));
       this.game.state.endGame();

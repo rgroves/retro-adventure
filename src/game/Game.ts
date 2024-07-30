@@ -101,14 +101,14 @@ export class Game {
   async saveScore() {
     const userId = localStorage.getItem("userSub");
     const username = localStorage.getItem("preferred_username");
-    const result = await client.models.HighScore.create({
+    await client.models.HighScore.create({
       userId: userId,
       preferredUsername: username,
       score: this.score,
       stats: "{}",
     });
-    console.dir({ result });
   }
+
   start() {
     this.state = new ReadyState(this);
     this.state.startGame();
@@ -172,6 +172,7 @@ export class Game {
             if (!nextScene) {
               throw new Error(`Could not find Scene with id ${exit.sceneId}`);
             }
+            this.feedbackOutputAdapter([playerCommand.message, ""], true);
             this.state = new EndSceneState(this);
             this.state.transitionScene(nextScene);
           } else {
@@ -208,6 +209,7 @@ export class Game {
             [this.currentScene.description, ""],
             true
           );
+          this.feedbackOutputAdapter([playerCommand.message, ""], true);
           break;
         }
 
