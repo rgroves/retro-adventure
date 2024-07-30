@@ -7,7 +7,7 @@ import {
   PlayerInputParser,
 } from "./PlayerInputParser";
 import { Scene } from "./Scene";
-import { EndSceneState, type GameState, ReadyState } from "./states";
+import { StartSceneState, type GameState, PoweredOnState } from "./states";
 import type { Schema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 
@@ -18,7 +18,6 @@ type PlayerPromptAdapter = React.Dispatch<React.SetStateAction<string>>;
 
 export class Game {
   public currentScene: Scene;
-  public state: GameState;
   public inventory: Map<string, Item>;
   public score: number;
 
@@ -63,11 +62,19 @@ export class Game {
     return this._scenes;
   }
 
+  get state() {
+    if (!this._state) {
+      throw new Error("Encountered uninitialized state!");
+    }
+    return this._state;
+  }
+
   private _feedbackOutputAdapter: OutputAdapter | null;
   private _narrativeOutputAdapter: OutputAdapter | null;
   private _playerInputParser: PlayerInputParser;
   private _playerPromptAdapter: PlayerPromptAdapter | null;
   private _scenes: Scene[];
+  private _state: GameState | null;
 
   constructor() {
     this.currentScene = new Scene({
@@ -80,15 +87,16 @@ export class Game {
     this._feedbackOutputAdapter = null;
     this._narrativeOutputAdapter = null;
     this._playerPromptAdapter = null;
-    this.state = new ReadyState(this);
+    this.changeState(new PoweredOnState(this));
     this._playerInputParser = new PlayerInputParser();
     this._scenes = [];
+    this._state = null;
     this.inventory = new Map();
     this.score = 0;
   }
 
   changeState(state: GameState) {
-    this.state = state;
+    this._state = state;
     // console.log(`State has changed to ${state.constructor.name}`);
   }
 
@@ -109,13 +117,13 @@ export class Game {
     });
   }
 
-  start() {
-    this.state = new ReadyState(this);
-    this.state.startGame();
+  powerOn() {
+    this.changeState(new PoweredOnState(this));
+    this.state.powerOn();
   }
 
-  stop() {
-    this.state.stopGame();
+  powerOff() {
+    this.state.powerOff();
   }
 
   processInput(rawInput: string): ParsedPlayerCommand {
@@ -173,8 +181,8 @@ export class Game {
               throw new Error(`Could not find Scene with id ${exit.sceneId}`);
             }
             this.feedbackOutputAdapter([playerCommand.message, ""], true);
-            this.state = new EndSceneState(this);
-            this.state.transitionScene(nextScene);
+            this.changeState(new StartSceneState(this));
+            this.state.playScene(nextScene);
           } else {
             playerCommand.status = PlayerCommandStatus.INVALID;
             playerCommand.message = "You can't do that.";

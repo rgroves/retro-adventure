@@ -96,17 +96,16 @@ export default function Terminal({ game }: TerminalProps) {
   };
 
   const powerHandler = () => {
-    const value = !power;
-    setPower(value);
-    if (value) {
+    const isPoweredOn = !power;
+    setPower(isPoweredOn);
+    if (isPoweredOn) {
       terminalWindowRef.current?.scrollTo(0, 0);
-      game.initialize();
-      game.start();
+      game.powerOn();
       setInputDisabled(false);
       setInputFeedback("Try typing: help");
     } else {
       clearTerminal();
-      game.stop();
+      game.powerOff();
       setInputDisabled(true);
     }
   };
