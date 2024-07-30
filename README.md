@@ -1,8 +1,15 @@
-# React + TypeScript + Vite
+# Retro Adventure
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An ode to the days of text-based adventure games.
 
-Currently, two official plugins are available:
+Built for [Jason Lengstorf's](https://www.learnwithjason.dev/) [Web Dev Challenge mini-hackathon \(retro gaming edition\)](https://www.learnwithjason.dev/blog/web-dev-challenge-giveaway-full-stack-amplify)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Local Development Notes
+
+- Set the AWS_PROFILE environment variable to your AWS profile that has the necessary Amplify permissions as outlined in the [Amplify Gen2 docs](https://docs.amplify.aws/react/start/).
+  ```shell
+  export AWS_PROFLIE=your-profile-name-here
+  ```
+- run `npm run aws-sso-refresh` if needed (to refresh your AWS access token)
+- run `npm run amplify-backend` to spin up the local sandbox and generate the `amplify_outputs.json` file.
+- run `npm run dev` to spin up the dev server.
