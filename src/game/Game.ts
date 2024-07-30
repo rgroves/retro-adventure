@@ -127,6 +127,19 @@ export class Game {
     return parsedCmd;
   }
 
+  getHelp() {
+    return [
+      "Valid commands are as follows:",
+      "examine - Use to examine things in a scene",
+      "go <direction> - Use to move through scenes",
+      "help - You're looking at it",
+      "inventory - Show the items you've collected",
+      "look - Describes the current scene",
+      "score - Displays your current score",
+      "take <item> - Take an item into inventory",
+    ];
+  }
+
   processPlayerCommand(playerCommand: ParsedPlayerCommand) {
     if (playerCommand.status === PlayerCommandStatus.VALID) {
       switch (playerCommand.name) {
@@ -166,6 +179,11 @@ export class Game {
             playerCommand.message = "You can't do that.";
             this.feedbackOutputAdapter([playerCommand.message, ""], true);
           }
+          break;
+        }
+
+        case PlayerCommand.HELP: {
+          this.feedbackOutputAdapter([...this.getHelp(), ""], true);
           break;
         }
 
