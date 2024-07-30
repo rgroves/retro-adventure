@@ -14,7 +14,7 @@ const TERMINAL_PADDING_WIDTH = 2;
 const TERMINAL_BORDER_WIDTH = 1;
 const TERMINAL_WIDTH =
   80 + TERMINAL_PADDING_WIDTH * 2 + TERMINAL_BORDER_WIDTH * 2;
-const TERMINAL_HEIGHT = 25;
+const TERMINAL_HEIGHT = 20;
 const EMPTY_TERMINAL_LINES = Array(TERMINAL_HEIGHT)
   .fill(undefined)
   .map(() => {
@@ -103,6 +103,7 @@ export default function Terminal({ game }: TerminalProps) {
       game.initialize();
       game.start();
       setInputDisabled(false);
+      setInputFeedback("Try typing: help");
     } else {
       clearTerminal();
       game.stop();
@@ -111,44 +112,44 @@ export default function Terminal({ game }: TerminalProps) {
   };
 
   return (
-      <View
-        fontFamily="monospace"
-        fontSize={tokens.fontSizes.medium}
-        width={`${TERMINAL_WIDTH}ch`}
-      >
-        <Flex direction="column" gap="0" minHeight="100%">
-          <ScrollView
-            ref={terminalWindowRef}
-            aria-readonly={true}
-            style={{ overflowY: "hidden" }}
-            border={`${TERMINAL_BORDER_WIDTH}ch ridge silver`}
-            padding={`${TERMINAL_PADDING_WIDTH}ch`}
-            height={`${TERMINAL_HEIGHT}lh`}
-            minHeight={`${TERMINAL_HEIGHT}lh`}
-          >
-            {narrativeOutput && narrativeOutput.map((line) => line)}
-            {feedbackOutput && feedbackOutput.map((line) => line)}
-            {playerPrompt && <Text ref={playerPromptRef}>{playerPrompt}</Text>}
-          </ScrollView>
-          <TerminalInput
-            game={game}
-            playerInputProcessor={game.processInput.bind(game)}
-            disabled={inputDisabled}
-            setDisabled={setInputDisabled}
-            setInputFeedback={setInputFeedback}
-            playerInput={playerInput}
-            setPlayerInput={setPlayerInput}
-          />
-          <Text minHeight="1lh">{inputFeedback}</Text>
-          <Button
-            alignSelf={"flex-end"}
-            borderColor={power ? "green" : "red"}
-            onClick={powerHandler}
-            marginBlockStart={tokens.fontSizes.large}
-          >
-            Power [{power ? "On" : "Off"}]
-          </Button>
-        </Flex>
-      </View>
+    <View
+      fontFamily="monospace"
+      fontSize={tokens.fontSizes.small}
+      width={`${TERMINAL_WIDTH}ch`}
+    >
+      <Flex direction="column" gap="0" minHeight="100%">
+        <ScrollView
+          ref={terminalWindowRef}
+          aria-readonly={true}
+          style={{ overflowY: "hidden" }}
+          border={`${TERMINAL_BORDER_WIDTH}ch ridge silver`}
+          padding={`${TERMINAL_PADDING_WIDTH}ch`}
+          height={`${TERMINAL_HEIGHT}lh`}
+          minHeight={`${TERMINAL_HEIGHT}lh`}
+        >
+          {narrativeOutput && narrativeOutput.map((line) => line)}
+          {feedbackOutput && feedbackOutput.map((line) => line)}
+          {playerPrompt && <Text ref={playerPromptRef}>{playerPrompt}</Text>}
+        </ScrollView>
+        <TerminalInput
+          game={game}
+          playerInputProcessor={game.processInput.bind(game)}
+          disabled={inputDisabled}
+          setDisabled={setInputDisabled}
+          setInputFeedback={setInputFeedback}
+          playerInput={playerInput}
+          setPlayerInput={setPlayerInput}
+        />
+        <Text minHeight="1lh">{inputFeedback}</Text>
+        <Button
+          alignSelf={"flex-end"}
+          borderColor={power ? "green" : "red"}
+          onClick={powerHandler}
+          marginBlockStart={tokens.fontSizes.large}
+        >
+          Power [{power ? "On" : "Off"}]
+        </Button>
+      </Flex>
+    </View>
   );
 }
