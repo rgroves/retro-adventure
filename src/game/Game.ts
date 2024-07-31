@@ -13,6 +13,10 @@ import {
   ExamineState,
   GoState,
   HelpState,
+  InventoryState,
+  LookState,
+  ScoreState,
+  TakeState,
 } from "./states";
 import type { Schema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
@@ -159,47 +163,26 @@ export class Game {
         }
 
         case PlayerCommand.INVENTORY: {
-          const inventoryOutput: string[] = [];
-          if (this.inventory.size > 0) {
-            inventoryOutput.push("The following items are in your inventory:");
-            this.inventory.forEach((item) =>
-              inventoryOutput.push(
-                `${item.name} ${item.qty > 1 ? `(x${item.qty}` : ""}`
-              )
-            );
-          } else {
-            inventoryOutput.push("Your inventory is empty.");
-          }
-          this.setFeedbackOutput([...inventoryOutput, ""], true);
+          this.changeState(new InventoryState(this));
+          this.state.processCommand(playerCommand);
           break;
         }
 
         case PlayerCommand.LOOK: {
-          this.setNarrativeOutput([this.currentScene.description, ""], true);
-          this.setFeedbackOutput([playerCommand.message, ""], true);
+          this.changeState(new LookState(this));
+          this.state.processCommand(playerCommand);
           break;
         }
 
         case PlayerCommand.SCORE: {
-          this.setFeedbackOutput([`Score: ${this.score}`, ""], true);
+          this.changeState(new ScoreState(this));
+          this.state.processCommand(playerCommand);
           break;
         }
 
         case PlayerCommand.TAKE: {
-          const item = this.currentScene.items.get(playerCommand.target);
-          if (item && item.isTakeable) {
-            this.currentScene.items.delete(playerCommand.target);
-            this.inventory.set(item.name.toLowerCase(), item);
-            playerCommand.message = item.takenMessage;
-            this.score += item.takenPointValue;
-            this.setFeedbackOutput([playerCommand.message, ""], true);
-            this.currentScene.description =
-              this.currentScene.description.replace(item.sceneDescFragment, "");
-          } else {
-            playerCommand.status = PlayerCommandStatus.INVALID;
-            playerCommand.message = "You can't do that.";
-            this.setFeedbackOutput([playerCommand.message, ""], true);
-          }
+          this.changeState(new TakeState(this));
+          this.state.processCommand(playerCommand);
           break;
         }
 

@@ -162,3 +162,63 @@ export class HelpState extends GameState {
     this.game.changeState(new AwaitingInputState(this.game));
   }
 }
+
+export class InventoryState extends GameState {
+  override processCommand(_command: IParsedPlayerCommand): void {
+    const inventoryOutput: string[] = [];
+
+    if (this.game.inventory.size > 0) {
+      inventoryOutput.push("The following items are in your inventory:");
+      this.game.inventory.forEach((item) =>
+        inventoryOutput.push(
+          `${item.name} ${item.qty > 1 ? `(x${item.qty}` : ""}`
+        )
+      );
+    } else {
+      inventoryOutput.push("Your inventory is empty.");
+    }
+
+    this.game.setFeedbackOutput([...inventoryOutput, ""], true);
+    this.game.changeState(new AwaitingInputState(this.game));
+  }
+}
+
+export class LookState extends GameState {
+  override processCommand(command: IParsedPlayerCommand): void {
+    this.game.setNarrativeOutput(
+      [this.game.currentScene.description, ""],
+      false
+    );
+    this.game.setFeedbackOutput([command.message, ""], true);
+    this.game.changeState(new AwaitingInputState(this.game));
+  }
+}
+
+export class ScoreState extends GameState {
+  override processCommand(_command: IParsedPlayerCommand): void {
+    this.game.setFeedbackOutput([`Score: ${this.game.score}`, ""], true);
+    this.game.changeState(new AwaitingInputState(this.game));
+  }
+}
+
+export class TakeState extends GameState {
+  override processCommand(command: IParsedPlayerCommand): void {
+    const item = this.game.currentScene.items.get(command.target);
+
+    if (item && item.isTakeable) {
+      this.game.currentScene.items.delete(command.target);
+      this.game.inventory.set(item.name.toLowerCase(), item);
+      command.message = item.takenMessage;
+      this.game.score += item.takenPointValue;
+      this.game.setFeedbackOutput([command.message, ""], true);
+      this.game.currentScene.description =
+        this.game.currentScene.description.replace(item.sceneDescFragment, "");
+    } else {
+      command.status = PlayerCommandStatus.INVALID;
+      command.message = "You can't do that.";
+      this.game.setFeedbackOutput([command.message, ""], true);
+    }
+
+    this.game.changeState(new AwaitingInputState(this.game));
+  }
+}
