@@ -4,7 +4,7 @@ import { PlayerInputParser } from "../../game/types";
 import { Game } from "../../game/Game";
 import { GameOverState } from "../../game/states";
 
-type CommandLineProps = {
+type TerminalInputProps = {
   game: Game;
   playerInputProcessor: PlayerInputParser;
   disabled: boolean;
@@ -22,7 +22,7 @@ export default function TerminalInput({
   setInputFeedback,
   playerInput,
   setPlayerInput,
-}: CommandLineProps) {
+}: TerminalInputProps) {
   const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setDisabled(true);

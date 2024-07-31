@@ -137,7 +137,7 @@ export class Game {
   }
 
   processInput(rawInput: string): IParsedPlayerCommand {
-    const parsedCmd = this.state.processInput(rawInput);
+    const parsedCmd = this.state.processInput(rawInput.toLowerCase().trim());
     return parsedCmd;
   }
 

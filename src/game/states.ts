@@ -1,6 +1,6 @@
 import { ExitDirection } from "./Exit";
 import { type Game } from "./Game";
-import { IParsedPlayerCommand, PlayerCommandStatus } from "./CommandProcessor";
+import { IParsedPlayerCommand } from "./CommandProcessor";
 import { Scene } from "./Scene";
 
 /**
@@ -119,9 +119,7 @@ export class ExamineState extends GameState {
       this.game.score += item.examinePointValue;
       this.game.setFeedbackOutput([command.message, ""], true);
     } else {
-      command.status = PlayerCommandStatus.INVALID;
-      command.message = "You can't do that.";
-      this.game.setFeedbackOutput([command.message, ""], true);
+      this.game.setFeedbackOutput(["You can't do that.", ""], true);
     }
 
     this.game.changeState(new AwaitingInputState(this.game));
@@ -148,8 +146,7 @@ export class GoState extends GameState {
       this.game.changeState(new StartSceneState(this.game));
       this.game.state.playScene(nextScene);
     } else {
-      command.message = "You can't go there.";
-      this.game.setFeedbackOutput([command.message, ""], true);
+      this.game.setFeedbackOutput(["You can't go there.", ""], true);
       this.game.changeState(new AwaitingInputState(this.game));
     }
   }
@@ -184,12 +181,12 @@ export class InventoryState extends GameState {
 }
 
 export class LookState extends GameState {
-  override processCommand(command: IParsedPlayerCommand): void {
+  override processCommand(_command: IParsedPlayerCommand): void {
     this.game.setNarrativeOutput(
       [this.game.currentScene.description, ""],
       false
     );
-    this.game.setFeedbackOutput([command.message, ""], true);
+    this.game.setFeedbackOutput([], true);
     this.game.changeState(new AwaitingInputState(this.game));
   }
 }
@@ -208,15 +205,12 @@ export class TakeState extends GameState {
     if (item && item.isTakeable) {
       this.game.currentScene.items.delete(command.target);
       this.game.inventory.set(item.name.toLowerCase(), item);
-      command.message = item.takenMessage;
       this.game.score += item.takenPointValue;
-      this.game.setFeedbackOutput([command.message, ""], true);
+      this.game.setFeedbackOutput([item.takenMessage, ""], true);
       this.game.currentScene.description =
         this.game.currentScene.description.replace(item.sceneDescFragment, "");
     } else {
-      command.status = PlayerCommandStatus.INVALID;
-      command.message = "You can't do that.";
-      this.game.setFeedbackOutput([command.message, ""], true);
+      this.game.setFeedbackOutput(["You can't do that.", ""], true);
     }
 
     this.game.changeState(new AwaitingInputState(this.game));
