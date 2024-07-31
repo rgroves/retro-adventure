@@ -1,7 +1,6 @@
 import { ExitDirection } from "./Exit";
 import { type Game } from "./Game";
-import { type ParsedPlayerCommand } from "./ParsedPlayerCommand";
-import { PlayerCommandStatus } from "./PlayerInputParser";
+import { IParsedPlayerCommand, PlayerCommandStatus } from "./CommandProcessor";
 import { Scene } from "./Scene";
 
 /**
@@ -54,11 +53,11 @@ export abstract class GameState {
     throw new Error("Method not implemented.");
   }
 
-  processCommand(_command: ParsedPlayerCommand): void {
+  processCommand(_command: IParsedPlayerCommand): void {
     throw new Error("Method not implemented.");
   }
 
-  processInput(_playerInput: string): ParsedPlayerCommand {
+  processInput(_playerInput: string): IParsedPlayerCommand {
     throw new Error("Method not implemented.");
   }
 
@@ -102,15 +101,15 @@ export class PoweredOnState extends GameState {
 }
 
 export class AwaitingInputState extends GameState {
-  override processInput(playerInput: string): ParsedPlayerCommand {
-    const playerCommand = this.game.playerInputParser.parse(playerInput);
+  override processInput(playerInput: string): IParsedPlayerCommand {
+    const playerCommand = this.game.commandProcessor.parse(playerInput);
     this.game.processPlayerCommand(playerCommand);
     return playerCommand;
   }
 }
 
 export class ExamineState extends GameState {
-  override processCommand(command: ParsedPlayerCommand): void {
+  override processCommand(command: IParsedPlayerCommand): void {
     const item =
       this.game.currentScene.items.get(command.target) ||
       this.game.inventory.get(command.target);
@@ -130,7 +129,7 @@ export class ExamineState extends GameState {
 }
 
 export class GoState extends GameState {
-  override processCommand(command: ParsedPlayerCommand): void {
+  override processCommand(command: IParsedPlayerCommand): void {
     const direction =
       command.target.toUpperCase() as keyof typeof ExitDirection;
 
@@ -153,5 +152,13 @@ export class GoState extends GameState {
       this.game.setFeedbackOutput([command.message, ""], true);
       this.game.changeState(new AwaitingInputState(this.game));
     }
+  }
+}
+
+export class HelpState extends GameState {
+  override processCommand(command: IParsedPlayerCommand): void {
+    const helpText = this.game.commandProcessor.getCommandHelp(command.target);
+    this.game.setFeedbackOutput([...helpText, ""], true);
+    this.game.changeState(new AwaitingInputState(this.game));
   }
 }

@@ -1,5 +1,5 @@
 import { Input } from "@aws-amplify/ui-react";
-import { PlayerCommandStatus } from "../../game/PlayerInputParser";
+import { PlayerCommandStatus } from "../../game/CommandProcessor";
 import { PlayerInputParser } from "../../game/types";
 import { Game } from "../../game/Game";
 import { GameOverState } from "../../game/states";

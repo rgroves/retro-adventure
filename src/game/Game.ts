@@ -1,17 +1,18 @@
 import Exit, { ExitDirection } from "./Exit";
 import { Item } from "./Item";
-import { ParsedPlayerCommand } from "./ParsedPlayerCommand";
 import {
   PlayerCommand,
   PlayerCommandStatus,
-  PlayerInputParser,
-} from "./PlayerInputParser";
+  CommandProcessor,
+  IParsedPlayerCommand,
+} from "./CommandProcessor";
 import { Scene } from "./Scene";
 import {
   type GameState,
   PoweredOnState,
   ExamineState,
   GoState,
+  HelpState,
 } from "./states";
 import type { Schema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
@@ -26,8 +27,8 @@ export class Game {
   public inventory: Map<string, Item>;
   public score: number;
 
-  get playerInputParser() {
-    return this._playerInputParser;
+  get commandProcessor() {
+    return this._commandProcessor;
   }
 
   get setFeedbackOutput(): OutputAdapter {
@@ -76,7 +77,7 @@ export class Game {
 
   private _setFeedbackOutput: OutputAdapter | null;
   private _setNarrativeOutput: OutputAdapter | null;
-  private _playerInputParser: PlayerInputParser;
+  private _commandProcessor: CommandProcessor;
   private _setPlayerPrompt: PlayerPromptAdapter | null;
   private _scenes: Scene[];
   private _state: GameState | null;
@@ -93,7 +94,7 @@ export class Game {
     this._setNarrativeOutput = null;
     this._setPlayerPrompt = null;
     this.changeState(new PoweredOnState(this));
-    this._playerInputParser = new PlayerInputParser();
+    this._commandProcessor = new CommandProcessor();
     this._scenes = [];
     this._state = null;
     this.inventory = new Map();
@@ -131,25 +132,12 @@ export class Game {
     this.state.powerOff();
   }
 
-  processInput(rawInput: string): ParsedPlayerCommand {
+  processInput(rawInput: string): IParsedPlayerCommand {
     const parsedCmd = this.state.processInput(rawInput);
     return parsedCmd;
   }
 
-  getHelp() {
-    return [
-      "Valid commands are as follows:",
-      "examine <item> - Use to examine things in a scene",
-      "go <direction> - Use to move through scenes",
-      "help - You're looking at it",
-      "inventory - Show the items you've collected",
-      "look - Describes the current scene",
-      "score - Displays your current score",
-      "take <item> - Take an item into inventory",
-    ];
-  }
-
-  processPlayerCommand(playerCommand: ParsedPlayerCommand) {
+  processPlayerCommand(playerCommand: IParsedPlayerCommand) {
     if (playerCommand.status === PlayerCommandStatus.VALID) {
       switch (playerCommand.name) {
         case PlayerCommand.EXAMINE: {
@@ -165,7 +153,8 @@ export class Game {
         }
 
         case PlayerCommand.HELP: {
-          this.setFeedbackOutput([...this.getHelp(), ""], true);
+          this.changeState(new HelpState(this));
+          this.state.processCommand(playerCommand);
           break;
         }
 
