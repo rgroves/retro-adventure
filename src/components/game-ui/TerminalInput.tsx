@@ -5,6 +5,7 @@ import { Game } from "../../game/Game";
 import { GameOverState } from "../../game/states";
 
 type TerminalInputProps = {
+  inputRef: React.RefObject<HTMLInputElement>;
   game: Game;
   playerInputProcessor: PlayerInputParser;
   disabled: boolean;
@@ -15,6 +16,7 @@ type TerminalInputProps = {
 };
 
 export default function TerminalInput({
+  inputRef,
   game,
   playerInputProcessor,
   disabled,
@@ -44,6 +46,7 @@ export default function TerminalInput({
     <>
       <form onSubmit={submitHandler}>
         <Input
+          ref={inputRef}
           disabled={disabled}
           type="text"
           onChange={(e) => {

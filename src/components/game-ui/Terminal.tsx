@@ -9,6 +9,7 @@ import {
 } from "@aws-amplify/ui-react";
 import { type Game } from "../../game/Game";
 import TerminalInput from "./TerminalInput";
+import { GrPower, GrPowerReset } from "react-icons/gr";
 
 const TERMINAL_PADDING_WIDTH = 2;
 const TERMINAL_BORDER_WIDTH = 1;
@@ -80,6 +81,7 @@ export default function Terminal({ game }: TerminalProps) {
 
   const terminalWindowRef = useRef<HTMLDivElement>(null);
   const playerPromptRef = useRef<HTMLParagraphElement>(null);
+  const playerInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (playerPromptRef) {
@@ -88,7 +90,7 @@ export default function Terminal({ game }: TerminalProps) {
   }, [narrativeOutput, feedbackOutput]);
 
   const clearTerminal = () => {
-    setNarrativeOutput([]);
+    setNarrativeOutput(() => []);
     setFeedbackOutput([]);
     setPlayerPrompt("");
     setInputFeedback("");
@@ -103,6 +105,9 @@ export default function Terminal({ game }: TerminalProps) {
       game.powerOn();
       setInputDisabled(false);
       setInputFeedback("Try typing: help");
+      setTimeout(() => {
+        playerInputRef.current?.focus();
+      }, 0);
     } else {
       clearTerminal();
       game.powerOff();
@@ -131,6 +136,7 @@ export default function Terminal({ game }: TerminalProps) {
           {playerPrompt && <Text ref={playerPromptRef}>{playerPrompt}</Text>}
         </ScrollView>
         <TerminalInput
+          inputRef={playerInputRef}
           game={game}
           playerInputProcessor={game.processInput.bind(game)}
           disabled={inputDisabled}
@@ -140,14 +146,35 @@ export default function Terminal({ game }: TerminalProps) {
           setPlayerInput={setPlayerInput}
         />
         <Text minHeight="1lh">{inputFeedback}</Text>
-        <Button
-          alignSelf={"flex-end"}
-          borderColor={power ? "green" : "red"}
-          onClick={powerHandler}
-          marginBlockStart={tokens.fontSizes.large}
-        >
-          Power [{power ? "On" : "Off"}]
-        </Button>
+        <Flex justifyContent="end">
+          <Button
+            alignSelf={"flex-end"}
+            borderColor="#f0f0f0"
+            onClick={powerHandler}
+            marginBlockStart={tokens.fontSizes.large}
+          >
+            <GrPower style={{ color: power ? "#0f0" : "#f00" }} />
+            &nbsp;POWER
+          </Button>
+          <Button
+            alignSelf={"flex-end"}
+            borderColor="#f0f0f0"
+            disabled={!power}
+            onClick={(e) => {
+              clearTerminal();
+              setTimeout(() => {
+                game.powerOn();
+                setInputDisabled(false);
+                setInputFeedback("Try typing: help");
+              }, 0);
+              playerInputRef.current?.focus();
+            }}
+            marginBlockStart={tokens.fontSizes.large}
+          >
+            <GrPowerReset style={{ color: "#f0f0f0" }} />
+            &nbsp;RESET
+          </Button>
+        </Flex>
       </Flex>
     </View>
   );
