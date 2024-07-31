@@ -160,7 +160,7 @@ export default function Terminal({ game }: TerminalProps) {
             alignSelf={"flex-end"}
             borderColor="#f0f0f0"
             disabled={!power}
-            onClick={(e) => {
+            onClick={() => {
               clearTerminal();
               setTimeout(() => {
                 game.powerOn();
