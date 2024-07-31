@@ -198,7 +198,7 @@ const story: Scene[] = [
     id: "F62820E1-C129-4414-B322-B27F5CFE1D71",
     name: "The Spooky Cave",
     description:
-      "You're in a cave that seems to swallow light. It's impossible to see anything. There are echoes of laughter from deep within. You think it's probably best to turn back the way you came.",
+      "You're in a cave that seems to swallow light. You can't even see the light from where you entered. You think to yourself, \"Who designed this place, ChatGPT?\". It's a fleeting thought. It's impossible to see anything. You did happen to feel yourself kick an object just before you stopped walking. There are echoes of laughter from deep within. Your gut feeling is to turn back.",
     prompt: "What do you do?",
     exits: new Map([
       [
@@ -208,7 +208,55 @@ const story: Scene[] = [
           sceneId: "8C243AA8-CFB5-42B3-854C-6D13C84EFD45",
         },
       ],
+      [
+        ExitDirection.NORTH,
+        {
+          direction: ExitDirection.NORTH,
+          sceneId: "8ca97259-9d37-4d53-aa71-5958d761df47",
+        },
+      ],
+      [
+        ExitDirection.EAST,
+        {
+          direction: ExitDirection.EAST,
+          sceneId: "8ca97259-9d37-4d53-aa71-5958d761df47",
+        },
+      ],
+      [
+        ExitDirection.WEST,
+        {
+          direction: ExitDirection.WEST,
+          sceneId: "8ca97259-9d37-4d53-aa71-5958d761df47",
+        },
+      ],
     ]),
+    items: new Map([
+      [
+        "object",
+        new Item({
+          id: "object",
+          name: "Old Torch",
+          sceneDescFragment:
+            " You did happen to feel yourself kick an object just before you stopped walking.",
+          isTakeable: true,
+          takenPointValue: 15,
+          takenMessage: "You bend down and pick up the object.",
+          isExaminable: true,
+          examinePointValue: 10,
+          examineMessage:
+            "It feels like wood, thick, about three feet in size and has a top that feels like rag and ash. It is cold to the touch and you guess that its been here a long while.",
+          qty: 1,
+        }),
+      ],
+    ]),
+  }),
+  new Scene({
+    id: "8ca97259-9d37-4d53-aa71-5958d761df47",
+    name: "The Land of the Blind",
+    description:
+      "Welp! You lost your footing, and unfortunately do not meet ground. As you fall to your doom, your last thoughts are about Bitey. He was always a little smarter than you, he'll be fine.",
+    prompt: "GAME OVER",
+    exits: new Map(),
     items: new Map(),
   }),
   new Scene({
@@ -295,7 +343,7 @@ const story: Scene[] = [
     id: "3F485378-47BA-4CB8-92FC-FF04433CEDC0",
     name: "The Chuckling Cliffs",
     description:
-      "After a long walk you arrive at some cliffs that echo with chuckles. There’s a cave entrance to the north and a meadow some distance away to the south.",
+      "After a long walk you find yourself currently in the middle of what seems to be a land bridge, with steep cliffs to your left and right. The cliffs echo with chuckles. There’s a large mountian with a cave entrance to the north and a meadow some distance away to the south.",
     prompt: "What do you do?",
     exits: new Map([
       [
@@ -312,7 +360,30 @@ const story: Scene[] = [
           sceneId: "33D19EA9-1322-421C-92C0-8BB7F04C0816",
         },
       ],
+      [
+        ExitDirection.EAST,
+        {
+          direction: ExitDirection.EAST,
+          sceneId: "5ecb0257-950e-410a-8a9b-70307d9d9c28",
+        },
+      ],
+      [
+        ExitDirection.WEST,
+        {
+          direction: ExitDirection.WEST,
+          sceneId: "5ecb0257-950e-410a-8a9b-70307d9d9c28",
+        },
+      ],
     ]),
+    items: new Map(),
+  }),
+  new Scene({
+    id: "5ecb0257-950e-410a-8a9b-70307d9d9c28",
+    name: "A Nice View",
+    description:
+      'So, maybe you thought you could fly? Strange thought to have. You realize that now. While you are in a free-fall descent down the side of the cliff, you think to yourself, "Self, this is kind of a nice view... while it lasts."',
+    prompt: "GAME OVER",
+    exits: new Map(),
     items: new Map(),
   }),
   new Scene({
