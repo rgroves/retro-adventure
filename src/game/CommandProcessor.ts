@@ -107,7 +107,7 @@ export class CommandProcessor {
     CommandProcessor.commandPatternMap.forEach(({ pattern }, name) => {
       const match = pattern.exec(input);
       if (Array.isArray(match)) {
-        console.log(`matched ${name}: using ${match[1]}`);
+        // console.log(`matched ${name}: using ${match[1]}`);
         matched = {
           status: PlayerCommandStatus.VALID,
           name,

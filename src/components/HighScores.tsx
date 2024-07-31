@@ -17,20 +17,24 @@ Amplify.configure(outputs);
 const client = generateClient<Schema>();
 
 export default function HighScores() {
-  const [scores, setScores] = useState<Schema["HighScore"]["type"][]>([]);
+  const [scores, setScores] = useState<Schema["GameScores"]["type"][]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchScores = async () => {
-    const { data: items, errors } = await client.models.HighScore.list({
-      limit: 100,
-    });
+    const { data: items, errors } =
+      await client.models.GameScores.scoresByStory(
+        {
+          storyTitle: "Demo", // TODO: this needs to be passed in or selected via a drop down
+        },
+        { limit: 10, sortDirection: "DESC" }
+      );
+
     if (errors) {
       // TODO handle errors gracefully.
       console.log({ errors });
     }
-    // TODO this sort should be done by the query, need to figure this out.
-    const sortedItems = items.sort((a, b) => (b.score || 0) - (a.score || 0));
-    setScores(sortedItems.slice(0, 10));
+
+    setScores(items);
     setLoading(false);
   };
 
@@ -46,13 +50,15 @@ export default function HighScores() {
         <TableRow>
           <TableCell as="th">Name</TableCell>
           <TableCell as="th">Score</TableCell>
+          <TableCell as="th">Date</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
-        {scores.map(({ id, preferredUsername, score }) => (
+        {scores.map(({ id, preferredUsername, score, createdAt }) => (
           <TableRow key={id}>
             <TableCell>{preferredUsername}</TableCell>
             <TableCell>{score}</TableCell>
+            <TableCell>{createdAt.substring(0, 10)}</TableCell>
           </TableRow>
         ))}
       </TableBody>

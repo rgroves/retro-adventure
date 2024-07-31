@@ -119,12 +119,23 @@ export class Game {
   async saveScore() {
     const userId = localStorage.getItem("userSub");
     const username = localStorage.getItem("preferred_username");
-    await client.models.HighScore.create({
-      userId: userId,
-      preferredUsername: username,
-      score: this.score,
-      stats: "{}",
-    });
+    if (userId && username) {
+      let result = await client.models.GameScores.create(
+        {
+          userId: userId,
+          preferredUsername: username,
+          storyTitle: "Demo", // TODO: need to incorporate this into Game: Game.currentStoryTitle
+          score: this.score,
+          stats: "{}",
+        },
+        { authMode: "userPool" }
+      );
+
+      // TODO handle errors gracefully.
+      if (result.errors) {
+        console.log({ errors: result.errors });
+      }
+    }
   }
 
   powerOn() {

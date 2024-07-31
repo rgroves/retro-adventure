@@ -4,7 +4,9 @@ import HighScores from "./components/HighScores";
 export default function ScoresPage() {
   return (
     <View id="scores-page">
-      <Heading level={1} lineHeight={"1.5em"}>High Scores</Heading>
+      <Heading level={1} lineHeight={"1.5em"}>
+        Top 10 High Scores
+      </Heading>
       <HighScores />
     </View>
   );
