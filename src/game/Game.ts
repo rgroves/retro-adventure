@@ -19,7 +19,7 @@ import {
 } from "./states";
 import type { Schema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
-import story, { storyTitle } from "./stories/corgi-quest";
+import loadCorgiQuest, { storyTitle } from "./stories/corgi-quest";
 
 const client = generateClient<Schema>();
 
@@ -210,7 +210,7 @@ export class Game {
   private loadScenes(): Scene[] {
     // TODO: load story and scenes from external source
     this.storyTitle = storyTitle;
-    const scenes: Scene[] = story;
+    const scenes: Scene[] = loadCorgiQuest();
     return scenes;
   }
 }
