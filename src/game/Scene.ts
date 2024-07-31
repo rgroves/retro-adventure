@@ -83,6 +83,6 @@ export class Scene {
 
   getItem(name: string): Item | undefined {
     const item = this.items.get(name);
-    return item
+    return item;
   }
 }

@@ -1,3 +1,16 @@
+interface IItem {
+  id: string;
+  name: string;
+  sceneDescFragment: string;
+  isTakeable: boolean;
+  takenPointValue: number;
+  takenMessage: string;
+  isExaminable: boolean;
+  examinePointValue: number;
+  examineMessage: string;
+  qty: number;
+}
+
 export class Item {
   public id: string;
   public name: string;
@@ -21,7 +34,7 @@ export class Item {
     examinePointValue = 0,
     examineMessage = "",
     qty = 1,
-  }: Pick<Item, "id" | "name"> & Partial<Item>) {
+  }: Pick<IItem, "id" | "name"> & Partial<IItem>) {
     // TODO replace these validaion checks with a schema validator.
     if (typeof id !== "string" || !id) {
       throw Error(
