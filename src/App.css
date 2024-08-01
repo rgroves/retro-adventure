@@ -9,6 +9,10 @@
   height: 100%;
 }
 
+[data-amplify-authenticator] [data-amplify-container] {
+  margin: 0 auto;
+}
+
 .header-container {
   padding: var(--amplify-space-medium);
   grid-template-columns: 1fr 1fr 1fr;

@@ -1,4 +1,11 @@
-import { Flex, Grid, Text, useTheme, View } from "@aws-amplify/ui-react";
+import {
+  Authenticator,
+  Flex,
+  Grid,
+  Text,
+  useTheme,
+  View,
+} from "@aws-amplify/ui-react";
 import React from "react";
 import UserMenu from "./UserMenu";
 import NavMenu from "./NavMenu";
@@ -26,7 +33,11 @@ export default function BaseLayout({ children }: BaseLayoutProps) {
           <Grid className="header-container">
             <NavMenu />
             <SiteTitle />
-            <UserMenu />
+            <Authenticator initialState="signIn" variation="modal">
+              <Authenticator.Provider>
+                <UserMenu />
+              </Authenticator.Provider>
+            </Authenticator>
           </Grid>
         </header>
         <main style={{ flex: "auto" }}>{children}</main>
