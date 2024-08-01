@@ -31,21 +31,21 @@ export class CommandProcessor {
     [
       PlayerCommand.EXAMINE,
       {
-        pattern: /^\s*examine\s+(\w+|(\w+ \w+)+)\s*$/i,
+        pattern: /^\s*examine\s+([a-z0-9'"]+|([a-z0-9'"]+ [a-z0-9'"]+)+)\s*$/i,
         help: "examine <item> - Use to examine things in a scene",
       },
     ],
     [
       PlayerCommand.GO,
       {
-        pattern: /^\s*go\s+(\w+)\s*$/i,
+        pattern: /^\s*go\s+([a-z0-9'"]+)\s*$/i,
         help: "go <direction> - Use to move through scenes",
       },
     ],
     [
       PlayerCommand.HELP,
       {
-        pattern: /^\s*help\s*(\s*\w+)?\s*$/i,
+        pattern: /^\s*help\s*(\s*[a-z0-9'"]+)?\s*$/i,
         help: "help [command] - displays help for a specific command or all commands",
       },
     ],
@@ -70,7 +70,7 @@ export class CommandProcessor {
     [
       PlayerCommand.TAKE,
       {
-        pattern: /^\s*take\s+(\w+|(\w+ \w+)+)\s*$/i,
+        pattern: /^\s*take\s+([a-z0-9'"]+|([a-z0-9'"]+ [a-z0-9'"]+)+)\s*$/i,
         help: "take <item> - Take an item into inventory",
       },
     ],
@@ -110,7 +110,7 @@ export class CommandProcessor {
     CommandProcessor.commandPatternMap.forEach(({ pattern }, name) => {
       const match = pattern.exec(input);
       if (Array.isArray(match)) {
-        const target = match.length > 1 ? match[1] : "";
+        const target = match[1] ? match[1] : "";
         matched = {
           status: PlayerCommandStatus.VALID,
           name,
