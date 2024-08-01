@@ -31,13 +31,11 @@ export default function HighScores() {
       console.log({ errors });
     }
 
-    console.log("Setting new scores");
     setScores(items);
     setLoading(false);
   };
 
   useEffect(() => {
-    console.log("useEffect: fetchScores");
     fetchScores();
   }, [storyTitle]);
 

@@ -17,6 +17,10 @@ module.exports = {
       "warn",
       { allowConstantExport: true },
     ],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { argsIgnorePattern: "_[a-zA-Z0-9_]+" },
+    ],
   },
   parserOptions: {
     ecmaVersion: "latest",

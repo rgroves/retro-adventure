@@ -23,9 +23,9 @@ export default function UserMenu() {
   useEffect(() => {
     async function loadUserAttributes() {
       const attributes = await fetchUserAttributes();
-      const name = attributes.preferred_username || "unknown";
+      const name = attributes.preferred_username ?? "unknown";
       localStorage.setItem("preferred_username", name);
-      localStorage.setItem("userSub", attributes.sub || "");
+      localStorage.setItem("userSub", attributes.sub ?? "");
       setpreferredUserName(name);
     }
     loadUserAttributes();

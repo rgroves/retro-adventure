@@ -1,10 +1,12 @@
 import { Input } from "@aws-amplify/ui-react";
-import { PlayerCommandStatus } from "../../game/CommandProcessor";
-import { PlayerInputParser } from "../../game/types";
+import {
+  PlayerCommandStatus,
+  PlayerInputParser,
+} from "../../game/CommandProcessor";
 import { Game } from "../../game/Game";
 import { GameOverState } from "../../game/states";
 
-type TerminalInputProps = {
+interface TerminalInputProps {
   inputRef: React.RefObject<HTMLInputElement>;
   game: Game;
   playerInputProcessor: PlayerInputParser;
@@ -13,7 +15,7 @@ type TerminalInputProps = {
   setInputFeedback: React.Dispatch<React.SetStateAction<string>>;
   playerInput: string;
   setPlayerInput: React.Dispatch<React.SetStateAction<string>>;
-};
+}
 
 export default function TerminalInput({
   inputRef,
@@ -25,7 +27,7 @@ export default function TerminalInput({
   playerInput,
   setPlayerInput,
 }: TerminalInputProps) {
-  const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
+  const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setDisabled(true);
     const command = playerInputProcessor(playerInput);

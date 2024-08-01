@@ -7,7 +7,7 @@ export default function ErrorPage() {
   let message = "Unknown Error";
 
   if (isRouteErrorResponse(error)) {
-    message = `${error.status} ${error.statusText}`;
+    message = `${error.status.toString()} ${error.statusText}`;
   } else if (error instanceof Error) {
     message = error.message;
   } else if (typeof error === "string") {

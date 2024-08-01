@@ -1,5 +1,7 @@
+export type PlayerInputParser = (rawInput: string) => IParsedPlayerCommand;
+
 export interface IParsedPlayerCommand {
-  status: string;
+  status: PlayerCommandStatus;
   name: string;
   target: string;
   message: string;
@@ -84,12 +86,12 @@ export class CommandProcessor {
     this.helpText.sort();
   }
 
-  getCommandHelp(command: string = ""): string[] {
+  getCommandHelp(command = ""): string[] {
     const key =
       PlayerCommand[command.toUpperCase() as keyof typeof PlayerCommand];
     const specificHelp = CommandProcessor.commandPatternMap.get(key)?.help;
 
-    let helpOutput = specificHelp
+    const helpOutput = specificHelp
       ? [specificHelp]
       : ["***", "Valid commands are as follows:", ...this.helpText];
 
@@ -108,10 +110,11 @@ export class CommandProcessor {
       const match = pattern.exec(input);
       if (Array.isArray(match)) {
         // console.log(`matched ${name}: using ${match[1]}`);
+        const target = match.length > 1 ? match[1] : "";
         matched = {
           status: PlayerCommandStatus.VALID,
           name,
-          target: match[1]?.trim(),
+          target: target.trim(),
           message: "",
         };
       }

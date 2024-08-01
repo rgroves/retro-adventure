@@ -3,14 +3,14 @@ import { Item } from "./Item";
 
 const DEFAULT_PROMPT = "What do you do?";
 
-type IScene = {
+interface IScene {
   id: string;
   name: string;
   description: string;
   prompt: string;
   exits: Map<ExitDirection, Exit>;
   items: Map<string, Item>;
-};
+}
 
 export class Scene {
   public id: string;
@@ -24,48 +24,48 @@ export class Scene {
     return this.exits.size === 0;
   }
 
-  constructor({
-    id,
-    name,
-    description,
-    prompt = DEFAULT_PROMPT,
-    exits,
-    items,
-  }: Omit<IScene, "prompt"> & Partial<IScene>) {
+  constructor(sceneConfig: Omit<IScene, "prompt"> & Partial<IScene>) {
+    const {
+      id,
+      name,
+      description,
+      prompt = DEFAULT_PROMPT,
+      exits,
+      items,
+    } = sceneConfig;
+
     if (typeof id !== "string" || !id) {
       throw Error(
-        `Invalid id in scene properties ${JSON.stringify(arguments[0])}`
+        `Invalid id in scene properties ${JSON.stringify(sceneConfig)}`
       );
     }
 
     if (typeof name !== "string" || !name) {
       throw Error(
-        `Invalid name in scene properties ${JSON.stringify(arguments[0])}`
+        `Invalid name in scene properties ${JSON.stringify(sceneConfig)}`
       );
     }
 
     if (typeof description !== "string" || !description) {
       throw Error(
-        `Invalid description in scene properties ${JSON.stringify(
-          arguments[0]
-        )}`
+        `Invalid description in scene properties ${JSON.stringify(sceneConfig)}`
       );
     }
 
     if (typeof prompt !== "string" || !prompt) {
       throw Error(
-        `Invalid prompt in scene properties ${JSON.stringify(arguments[0])}`
+        `Invalid prompt in scene properties ${JSON.stringify(sceneConfig)}`
       );
     }
 
     if (!(exits instanceof Map)) {
       throw Error(
-        `Invalid exits in scene properties ${JSON.stringify(arguments[0])}`
+        `Invalid exits in scene properties ${JSON.stringify(sceneConfig)}`
       );
     }
     if (!(items instanceof Map)) {
       throw Error(
-        `Invalid items in scene properties ${JSON.stringify(arguments[0])}`
+        `Invalid items in scene properties ${JSON.stringify(sceneConfig)}`
       );
     }
 

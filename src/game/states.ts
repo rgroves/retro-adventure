@@ -49,7 +49,7 @@ export abstract class GameState {
     this.game.changeState(new PoweredOnState(this.game));
   }
 
-  playScene(_nextScene: Scene, _shouldClearScreen: boolean = false): void {
+  playScene(_nextScene: Scene, _shouldClearScreen = false): void {
     throw new Error("Method not implemented.");
   }
 
@@ -67,7 +67,7 @@ export abstract class GameState {
 }
 
 export class StartSceneState extends GameState {
-  override playScene(scene: Scene, shouldClearScreen: boolean = false): void {
+  override playScene(scene: Scene, shouldClearScreen = false): void {
     this.game.currentScene = scene;
     this.game.setNarrativeOutput(
       this.game.currentScene.getInitialSceneNarrative(),
@@ -86,7 +86,7 @@ export class StartSceneState extends GameState {
 
 export class GameOverState extends GameState {
   override endGame(): void {
-    this.game.setFeedbackOutput([`Score: ${this.game.score}`]);
+    this.game.setFeedbackOutput([`Score: ${this.game.score.toString()}`]);
     this.game.setPlayerPrompt("Game Over");
     this.game.saveScore();
   }
@@ -111,10 +111,10 @@ export class AwaitingInputState extends GameState {
 export class ExamineState extends GameState {
   override processCommand(command: IParsedPlayerCommand): void {
     const item =
-      this.game.currentScene.items.get(command.target) ||
+      this.game.currentScene.items.get(command.target) ??
       this.game.inventory.get(command.target);
 
-    if (item && item.isExaminable) {
+    if (item?.isExaminable) {
       command.message = item.examineMessage;
       this.game.score += item.examinePointValue;
       this.game.setFeedbackOutput([command.message, ""], true);
@@ -168,7 +168,7 @@ export class InventoryState extends GameState {
       inventoryOutput.push("The following items are in your inventory:");
       this.game.inventory.forEach((item) =>
         inventoryOutput.push(
-          `${item.name} ${item.qty > 1 ? `(x${item.qty}` : ""}`
+          `${item.name} ${item.qty > 1 ? `(x${item.qty.toString()}` : ""}`
         )
       );
     } else {
@@ -193,7 +193,10 @@ export class LookState extends GameState {
 
 export class ScoreState extends GameState {
   override processCommand(_command: IParsedPlayerCommand): void {
-    this.game.setFeedbackOutput([`Score: ${this.game.score}`, ""], true);
+    this.game.setFeedbackOutput(
+      [`Score: ${this.game.score.toString()}`, ""],
+      true
+    );
     this.game.changeState(new AwaitingInputState(this.game));
   }
 }
@@ -202,7 +205,7 @@ export class TakeState extends GameState {
   override processCommand(command: IParsedPlayerCommand): void {
     const item = this.game.currentScene.items.get(command.target);
 
-    if (item && item.isTakeable) {
+    if (item?.isTakeable) {
       this.game.currentScene.items.delete(command.target);
       this.game.inventory.set(item.name.toLowerCase(), item);
       this.game.score += item.takenPointValue;

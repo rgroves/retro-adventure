@@ -119,23 +119,26 @@ export class Game {
   }
 
   async saveScore() {
+    // TODO the game engine shouldn't be digging into localstorage
     const userId = localStorage.getItem("userSub");
     const username = localStorage.getItem("preferred_username");
+
     if (userId && username) {
-      let result = await client.models.GameScores.create(
-        {
-          userId: userId,
-          preferredUsername: username,
-          storyTitle: this.storyTitle,
-          score: this.score,
-          stats: "{}",
-        },
-        { authMode: "userPool" }
-      );
+      const gameScore = {
+        userId: userId,
+        preferredUsername: username,
+        storyTitle: this.storyTitle,
+        score: this.score,
+        stats: "{}",
+      };
+
+      const { errors } = await client.models.GameScores.create(gameScore, {
+        authMode: "userPool",
+      });
 
       // TODO handle errors gracefully.
-      if (result.errors) {
-        console.log({ errors: result.errors });
+      if (errors) {
+        console.log({ errors });
       }
     }
   }
@@ -156,7 +159,7 @@ export class Game {
 
   processPlayerCommand(playerCommand: IParsedPlayerCommand) {
     if (playerCommand.status === PlayerCommandStatus.VALID) {
-      switch (playerCommand.name) {
+      switch (playerCommand.name as PlayerCommand) {
         case PlayerCommand.EXAMINE: {
           this.changeState(new ExamineState(this));
           this.state.processCommand(playerCommand);

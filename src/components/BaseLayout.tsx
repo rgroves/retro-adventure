@@ -11,9 +11,9 @@ import {
 } from "react-icons/si";
 import { Link } from "react-router-dom";
 
-type BaseLayoutProps = {
+interface BaseLayoutProps {
   children: React.ReactNode;
-};
+}
 
 export default function BaseLayout({ children }: BaseLayoutProps) {
   return (

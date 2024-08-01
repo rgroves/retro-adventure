@@ -22,9 +22,9 @@ const EMPTY_TERMINAL_LINES = Array(TERMINAL_HEIGHT)
     return <Text key={crypto.randomUUID()}>&nbsp;</Text>;
   });
 
-type TerminalProps = {
+interface TerminalProps {
   game: Game;
-};
+}
 
 export default function Terminal({ game }: TerminalProps) {
   const { tokens } = useTheme();
@@ -45,7 +45,7 @@ export default function Terminal({ game }: TerminalProps) {
     stateSetter: React.Dispatch<React.SetStateAction<JSX.Element[]>>,
     fullscreenClear: boolean
   ) {
-    return (output: string[], clear: boolean = false) => {
+    return (output: string[], clear = false) => {
       const renderableOutput = [
         ...output.map((str) => (
           <Text key={crypto.randomUUID()}>{str ? str : <>&nbsp;</>}</Text>
@@ -65,11 +65,11 @@ export default function Terminal({ game }: TerminalProps) {
 
   useEffect(() => {
     game.setFeedbackOutput = getOutputAdapter(setFeedbackOutput, false);
-  }, []);
+  }, [game]);
 
   useEffect(() => {
     game.setNarrativeOutput = getOutputAdapter(setNarrativeOutput, true);
-  }, []);
+  }, [game]);
 
   /**
    * An explicit adapter for the player prompt is not needed since the prompt
@@ -84,9 +84,7 @@ export default function Terminal({ game }: TerminalProps) {
   const playerInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (playerPromptRef) {
-      playerPromptRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
+    playerPromptRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [narrativeOutput, feedbackOutput]);
 
   const clearTerminal = () => {
@@ -119,21 +117,21 @@ export default function Terminal({ game }: TerminalProps) {
     <View
       fontFamily="monospace"
       fontSize={tokens.fontSizes.small}
-      width={`${TERMINAL_WIDTH}ch`}
+      width={`${TERMINAL_WIDTH.toString()}ch`}
     >
-      <Flex direction="column" gap="0" minHeight="100%">
+      <Flex direction="column" gap={0} minHeight="100%">
         <ScrollView
           ref={terminalWindowRef}
           aria-readonly={true}
           style={{ overflowY: "hidden" }}
-          border={`${TERMINAL_BORDER_WIDTH}ch ridge silver`}
-          padding={`${TERMINAL_PADDING_WIDTH}ch`}
-          height={`${TERMINAL_HEIGHT}lh`}
-          minHeight={`${TERMINAL_HEIGHT}lh`}
+          border={`${TERMINAL_BORDER_WIDTH.toString()}ch ridge silver`}
+          padding={`${TERMINAL_PADDING_WIDTH.toString()}ch`}
+          height={`${TERMINAL_HEIGHT.toString()}lh`}
+          minHeight={`${TERMINAL_HEIGHT.toString()}lh`}
         >
-          {narrativeOutput && narrativeOutput.map((line) => line)}
-          {feedbackOutput && feedbackOutput.map((line) => line)}
-          {playerPrompt && <Text ref={playerPromptRef}>{playerPrompt}</Text>}
+          {narrativeOutput.map((line) => line)}
+          {feedbackOutput.map((line) => line)}
+          {<Text ref={playerPromptRef}>{playerPrompt}</Text>}
         </ScrollView>
         <TerminalInput
           inputRef={playerInputRef}

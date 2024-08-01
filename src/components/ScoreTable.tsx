@@ -7,9 +7,9 @@ import {
 } from "@aws-amplify/ui-react";
 import { Schema } from "../../amplify/data/resource";
 
-type ScoreTableProps = {
+interface ScoreTableProps {
   scores: Schema["GameScores"]["type"][];
-};
+}
 
 export default function ScoreTable({ scores }: ScoreTableProps) {
   return (

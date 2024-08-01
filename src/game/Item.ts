@@ -23,51 +23,51 @@ export class Item {
   public examineMessage: string;
   public qty: number;
 
-  constructor({
-    id,
-    name,
-    sceneDescFragment = "",
-    isTakeable = false,
-    takenPointValue = 0,
-    takenMessage = "",
-    isExaminable = false,
-    examinePointValue = 0,
-    examineMessage = "",
-    qty = 1,
-  }: Pick<IItem, "id" | "name"> & Partial<IItem>) {
+  constructor(itemConfig: Pick<IItem, "id" | "name"> & Partial<IItem>) {
+    const {
+      id,
+      name,
+      sceneDescFragment = "",
+      isTakeable = false,
+      takenPointValue = 0,
+      takenMessage = "",
+      isExaminable = false,
+      examinePointValue = 0,
+      examineMessage = "",
+      qty = 1,
+    } = itemConfig;
+
     // TODO replace these validaion checks with a schema validator.
     if (typeof id !== "string" || !id) {
       throw Error(
-        `Invalid id in scene properties ${JSON.stringify(arguments[0])}`
+        `Invalid id in scene properties ${JSON.stringify(itemConfig)}`
       );
     }
 
     if (typeof name !== "string" || !name) {
       throw Error(
-        `Invalid name in item properties ${JSON.stringify(arguments[0])}`
+        `Invalid name in item properties ${JSON.stringify(itemConfig)}`
       );
     }
 
     if (typeof sceneDescFragment !== "string" || !name) {
       throw Error(
         `Invalid sceneDescFragment in item properties ${JSON.stringify(
-          arguments[0]
+          itemConfig
         )}`
       );
     }
 
     if (typeof takenMessage !== "string") {
       throw Error(
-        `Invalid takenMessage in item properties ${JSON.stringify(
-          arguments[0]
-        )}`
+        `Invalid takenMessage in item properties ${JSON.stringify(itemConfig)}`
       );
     }
 
     if (typeof takenPointValue !== "number") {
       throw Error(
         `Invalid takenPointValue in item properties ${JSON.stringify(
-          arguments[0]
+          itemConfig
         )}`
       );
     }
@@ -75,7 +75,7 @@ export class Item {
     if (typeof examineMessage !== "string") {
       throw Error(
         `Invalid examineMessage in item properties ${JSON.stringify(
-          arguments[0]
+          itemConfig
         )}`
       );
     }
@@ -83,14 +83,14 @@ export class Item {
     if (typeof examinePointValue !== "number") {
       throw Error(
         `Invalid examinePointValue in item properties ${JSON.stringify(
-          arguments[0]
+          itemConfig
         )}`
       );
     }
 
     if (typeof qty !== "number" || qty < 1) {
       throw Error(
-        `Invalid qty in item properties ${JSON.stringify(arguments[0])}`
+        `Invalid qty in item properties ${JSON.stringify(itemConfig)}`
       );
     }
 
