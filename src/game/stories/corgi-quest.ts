@@ -187,7 +187,7 @@ export default function loadCorgiQuest() {
             isTakeable: true,
             takenPointValue: -10,
             takenMessage:
-              'You take the flower. It giggles for a moment... then nothing. Then suddenly it protests, "Well, fuck!" Then nothing again.',
+              'You take the flower. It giggles for a moment, wheezes... then nothing. Then suddenly, "Well, what\'d you go and do that for!" Then nothing again.',
             isExaminable: true,
             examinePointValue: 5,
             examineMessage: "The flower’s laughter is contagious.",
