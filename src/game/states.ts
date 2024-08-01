@@ -88,7 +88,7 @@ export class GameOverState extends GameState {
   override endGame(): void {
     this.game.setFeedbackOutput([`Score: ${this.game.score.toString()}`]);
     this.game.setPlayerPrompt("Game Over");
-    this.game.saveScore();
+    void this.game.saveScore();
   }
 }
 

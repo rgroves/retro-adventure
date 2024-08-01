@@ -22,13 +22,28 @@ export default function UserMenu() {
 
   useEffect(() => {
     async function loadUserAttributes() {
-      const attributes = await fetchUserAttributes();
-      const name = attributes.preferred_username ?? "unknown";
-      localStorage.setItem("preferred_username", name);
-      localStorage.setItem("userSub", attributes.sub ?? "");
+      let attributes, name;
+
+      try {
+        attributes = await fetchUserAttributes();
+        name = attributes.preferred_username ?? "unknown";
+      } catch (err) {
+        console.error(err);
+        console.log("Failed to get auth user info. Treating user as guest.");
+        name = "Guest";
+      }
+
       setpreferredUserName(name);
+
+      try {
+        localStorage.setItem("preferred_username", name);
+        localStorage.setItem("userSub", attributes?.sub ?? "");
+      } catch (err) {
+        console.error(err);
+        console.log("Failed to save user info to local storage.");
+      }
     }
-    loadUserAttributes();
+    void loadUserAttributes();
   }, [user.userId]);
 
   return (

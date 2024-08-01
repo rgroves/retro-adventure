@@ -3,8 +3,9 @@ import type { Schema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import { Amplify } from "aws-amplify";
 import outputs from "../../amplify_outputs.json";
-import { Heading, Loader, SelectField } from "@aws-amplify/ui-react";
+import { Alert, Heading, Loader, SelectField } from "@aws-amplify/ui-react";
 import ScoreTable from "./ScoreTable";
+import { type GraphQLFormattedError } from "graphql/error";
 
 Amplify.configure(outputs);
 
@@ -13,30 +14,29 @@ const client = generateClient<Schema>();
 export default function HighScores() {
   const [scores, setScores] = useState<Schema["GameScores"]["type"][]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<GraphQLFormattedError[] | undefined>();
   const [storyTitle, setStoryTitle] = useState("Demo");
 
-  const fetchScores = async () => {
-    setLoading(true);
-
-    const { data: items, errors } =
-      await client.models.GameScores.scoresByStory(
+  useEffect(() => {
+    const fetchScores = async () => {
+      setLoading(true);
+      const { data, errors } = await client.models.GameScores.scoresByStory(
         {
           storyTitle: storyTitle,
         },
         { limit: 10, sortDirection: "DESC" }
       );
 
-    if (errors) {
-      // TODO handle errors gracefully.
-      console.log({ errors });
-    }
+      if (errors) {
+        setError(errors);
+        console.log({ errors });
+      }
 
-    setScores(items);
-    setLoading(false);
-  };
+      setScores(data);
+      setLoading(false);
+    };
 
-  useEffect(() => {
-    fetchScores();
+    void fetchScores();
   }, [storyTitle]);
 
   return (
@@ -56,7 +56,15 @@ export default function HighScores() {
       <Heading level={1} lineHeight={"1.5em"}>
         Top 10 High Scores
       </Heading>
-      {loading ? <Loader /> : <ScoreTable scores={scores} />}
+      {loading ? (
+        <Loader />
+      ) : !error ? (
+        <ScoreTable scores={scores} />
+      ) : (
+        <Alert variation="error" heading="Error">
+          There was an issue with loading scores.
+        </Alert>
+      )}
     </>
   );
 }
