@@ -429,7 +429,7 @@ export default function loadCorgiQuest() {
       id: "FF8A50CB-D0BA-4C3B-9293-0214743B7154",
       name: "Our Way Out Of Here",
       description:
-        'The contraption you spotted seems to be a giant drone. You guess that it can comfortably fit one human and one puppy. You seem to be correct, as you find two seats inside. The seatbelts are labled, "Human" and "Puppy." Bitey licks you in the face, jumps down from your arms and into the drone. Your shocked as Bitey straps himself in and exclaims, "Get in loser. We\'re going on more adventures!"',
+        'The contraption you spotted seems to be a giant drone. You guess that it can comfortably fit one human and one puppy. You seem to be correct, as you find two seats inside. The seatbelts are labled, "Human" and "Puppy." Bitey licks you in the face, jumps down from your arms and into the drone. You\'re shocked as Bitey straps himself in and exclaims, "Get in loser. We\'re going on more adventures!"',
       prompt: "Game Over",
       exits: new Map(),
       items: new Map(),
