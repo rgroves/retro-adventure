@@ -1,4 +1,4 @@
-import { Flex, Grid, Text, View } from "@aws-amplify/ui-react";
+import { Flex, Grid, Text, useTheme, View } from "@aws-amplify/ui-react";
 import React from "react";
 import UserMenu from "./UserMenu";
 import NavMenu from "./NavMenu";
@@ -10,24 +10,28 @@ import {
   SiVite,
 } from "react-icons/si";
 import { Link } from "react-router-dom";
+import SiteTitle from "./SiteTitle";
 
 interface BaseLayoutProps {
   children: React.ReactNode;
 }
 
 export default function BaseLayout({ children }: BaseLayoutProps) {
+  const { tokens } = useTheme();
+
   return (
     <View style={{ height: "100%" }}>
       <Flex direction="column" gap="0" minHeight="100%">
         <header>
-          <Grid templateColumns={"1fr 1fr"}>
+          <Grid className="header-container">
             <NavMenu />
+            <SiteTitle />
             <UserMenu />
           </Grid>
         </header>
         <main style={{ flex: "auto" }}>{children}</main>
         <footer>
-          <Flex justifyContent="center">
+          <Flex padding={tokens.space.medium} justifyContent="center">
             <Text>
               Made with ❤️, 🧠, and ☕ in Chicago, IL, USA - using{" "}
               <Link to="https://react.dev/">

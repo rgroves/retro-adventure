@@ -8,3 +8,72 @@
 #root > div {
   height: 100%;
 }
+
+.header-container {
+  padding: var(--amplify-space-medium);
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.5em;
+}
+
+.header-container > * {
+  display: flex;
+}
+
+.nav-container {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--amplify-space-medium);
+  place-content: center flex-start;
+  text-align: left;
+  text-wrap: nowrap;
+}
+
+.site-title-container {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.user-menu-container {
+  place-content: center flex-end;
+  align-items: center;
+  gap: var(--amplify-space-medium);
+  text-align: right;
+  flex-wrap: wrap;
+}
+
+.sign-out {
+  font-size: var(--amplify-font-sizes-small);
+}
+
+@media (max-width: 480px) {
+  .header-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 0.5em;
+  }
+
+  .nav-container {
+    justify-content: center;
+    gap: var(--amplify-space-xxxl);
+    order: 2;
+  }
+
+  .site-title {
+    order: 1;
+  }
+
+  .user-menu-container {
+    justify-content: center;
+    order: 3;
+  }
+}
+
+@media (max-width: 479px) {
+  .nav-container {
+    justify-content: center;
+    gap: var(--amplify-space-large);
+    order: 2;
+  }
+}

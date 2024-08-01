@@ -1,15 +1,14 @@
-import { Flex } from "@aws-amplify/ui-react";
 import { Link as ReactRouterLink } from "react-router-dom";
 
 export default function NavMenu() {
   return (
-    <Flex alignItems="center">
-      <ReactRouterLink to="/">
-        {"//"}&nbsp;{"Play Game"}&nbsp;{"//"}
+    <nav className="nav-container">
+      <ReactRouterLink className="amplify-link" to="/">
+        {"//-Play"}&nbsp;{"Game-//"}
       </ReactRouterLink>
-      <ReactRouterLink to="/high-scores">
-        {"//"}&nbsp;{"High Scores"}&nbsp;{"//"}
+      <ReactRouterLink className="amplify-link" to="/high-scores">
+        {"//-High"}&nbsp;{"Scores-//"}
       </ReactRouterLink>
-    </Flex>
+    </nav>
   );
 }

@@ -2,19 +2,18 @@ import { useEffect, useState } from "react";
 import { fetchUserAttributes } from "aws-amplify/auth";
 import {
   Flex,
+  Link,
   Loader,
-  useTheme,
   Text,
-  Button,
   useAuthenticator,
 } from "@aws-amplify/ui-react";
 
 export default function UserMenu() {
   const { user, signOut } = useAuthenticator((context) => [context.user]);
   const [preferredUserName, setpreferredUserName] = useState("");
-  const { tokens } = useTheme();
 
-  const signOutFlow = () => {
+  const signOutFlow = (element: React.MouseEvent<HTMLAnchorElement>) => {
+    element.preventDefault();
     signOut();
     localStorage.removeItem("preferred_username");
     localStorage.removeItem("userSub");
@@ -47,15 +46,15 @@ export default function UserMenu() {
   }, [user.userId]);
 
   return (
-    <Flex justifyContent="flex-end" alignItems="center" gap={tokens.space.xl}>
+    <Flex className="user-menu-container">
       {preferredUserName ? (
         <Text>Welcome {preferredUserName}</Text>
       ) : (
         <Loader />
       )}
-      <Button size="small" onClick={signOutFlow}>
-        Sign out
-      </Button>
+      <Link className="sign-out" href="#" onClick={signOutFlow}>
+        (sign out)
+      </Link>
     </Flex>
   );
 }

@@ -119,7 +119,13 @@ export default function Terminal({ game }: TerminalProps) {
       fontSize={tokens.fontSizes.small}
       width={`${TERMINAL_WIDTH.toString()}ch`}
     >
-      <Flex direction="column" gap={0} minHeight="100%">
+      <Flex
+        id="HERE"
+        direction="column"
+        justifyContent="flex-start"
+        minHeight="100%"
+        gap="0"
+      >
         <ScrollView
           ref={terminalWindowRef}
           aria-readonly={true}
@@ -144,12 +150,15 @@ export default function Terminal({ game }: TerminalProps) {
           setPlayerInput={setPlayerInput}
         />
         <Text minHeight="1lh">{inputFeedback}</Text>
-        <Flex justifyContent="end">
+        <Flex
+          paddingBlockStart={tokens.space.medium}
+          paddingBlockEnd={tokens.space.medium}
+          justifyContent="end"
+        >
           <Button
             alignSelf={"flex-end"}
             borderColor="#f0f0f0"
             onClick={powerHandler}
-            marginBlockStart={tokens.fontSizes.large}
           >
             <GrPower style={{ color: power ? "#0f0" : "#f00" }} />
             &nbsp;POWER
@@ -167,7 +176,6 @@ export default function Terminal({ game }: TerminalProps) {
               }, 0);
               playerInputRef.current?.focus();
             }}
-            marginBlockStart={tokens.fontSizes.large}
           >
             <GrPowerReset style={{ color: "#f0f0f0" }} />
             &nbsp;RESET
