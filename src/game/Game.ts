@@ -159,7 +159,7 @@ export class Game {
 
   processPlayerCommand(playerCommand: IParsedPlayerCommand) {
     if (playerCommand.status === PlayerCommandStatus.VALID) {
-      switch (playerCommand.name as PlayerCommand) {
+      switch (playerCommand.name) {
         case PlayerCommand.EXAMINE: {
           this.changeState(new ExamineState(this));
           this.state.processCommand(playerCommand);

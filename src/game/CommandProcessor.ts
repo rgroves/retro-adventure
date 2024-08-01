@@ -2,7 +2,7 @@ export type PlayerInputParser = (rawInput: string) => IParsedPlayerCommand;
 
 export interface IParsedPlayerCommand {
   status: PlayerCommandStatus;
-  name: string;
+  name: PlayerCommand;
   target: string;
   message: string;
 }
@@ -16,6 +16,7 @@ export enum PlayerCommand {
   EXAMINE = "examine",
   GO = "go",
   HELP = "help",
+  INVALID = "",
   INVENTORY = "inventory",
   LOOK = "look",
   SCORE = "score",
@@ -101,7 +102,7 @@ export class CommandProcessor {
   parse(input: string): IParsedPlayerCommand {
     let matched: IParsedPlayerCommand = {
       status: PlayerCommandStatus.INVALID,
-      name: "",
+      name: PlayerCommand.INVALID,
       target: "",
       message: "",
     };
@@ -109,7 +110,6 @@ export class CommandProcessor {
     CommandProcessor.commandPatternMap.forEach(({ pattern }, name) => {
       const match = pattern.exec(input);
       if (Array.isArray(match)) {
-        // console.log(`matched ${name}: using ${match[1]}`);
         const target = match.length > 1 ? match[1] : "";
         matched = {
           status: PlayerCommandStatus.VALID,
