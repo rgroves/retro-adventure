@@ -10,7 +10,7 @@ import {
 
 export default function UserMenu() {
   const { user, signOut } = useAuthenticator((context) => [context.user]);
-  const [preferredUserName, setpreferredUserName] = useState("");
+  const [preferredUserName, setPreferredUserName] = useState("");
 
   const signOutFlow = (element: React.MouseEvent<HTMLAnchorElement>) => {
     element.preventDefault();
@@ -32,7 +32,7 @@ export default function UserMenu() {
         name = "Guest";
       }
 
-      setpreferredUserName(name);
+      setPreferredUserName(name);
 
       try {
         localStorage.setItem("preferred_username", name);
@@ -42,7 +42,15 @@ export default function UserMenu() {
         console.log("Failed to save user info to local storage.");
       }
     }
-    void loadUserAttributes();
+
+    const name = localStorage.getItem("preferred_username");
+    const userSub = localStorage.getItem("userSub");
+
+    if (name && userSub) {
+      setPreferredUserName(name);
+    } else {
+      void loadUserAttributes();
+    }
   }, [user.userId]);
 
   return (
