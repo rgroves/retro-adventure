@@ -25,7 +25,9 @@ export default function UserMenu() {
 
       try {
         attributes = await fetchUserAttributes();
-        name = attributes.preferred_username ?? "unknown";
+        name = attributes.preferred_username
+          ? attributes.preferred_username
+          : "unknown";
       } catch (err) {
         console.error(err);
         console.log("Failed to get auth user info. Treating user as guest.");

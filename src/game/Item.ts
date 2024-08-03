@@ -1,3 +1,5 @@
+import { ObjectValidator, Rule, ValidationType } from "../utils/validation";
+
 interface IItem {
   id: string;
   name: string;
@@ -10,6 +12,36 @@ interface IItem {
   examineMessage: string;
   qty: number;
 }
+
+const itemValidator = new ObjectValidator()
+  .isFor("ItemConfig")
+  .addRule(
+    new Rule<string>()
+      .forProperties(["id", "name", "sceneDescFragment"])
+      .hasType(ValidationType.STRING)
+      .disallowed(new Set([""]))
+      .description("must be a non-empty string")
+  )
+  .addRule(
+    new Rule<string>()
+      .forProperties(["examineMessage", "takenMessage"])
+      .hasType(ValidationType.STRING)
+      .description("must be a string")
+  )
+  .addRule(
+    new Rule<number>()
+      .forProperties(["examinePointValue", "takenPointValue"])
+      .hasType(ValidationType.NUMBER)
+      .description("must be a number")
+  )
+  .addRule(
+    new Rule<number>()
+      .forProperties(["qty"])
+      .hasType(ValidationType.NUMBER)
+      .greaterThan(0)
+      .isOptional()
+      .description("must be a number greater than 0")
+  );
 
 export class Item {
   public id: string;
@@ -24,6 +56,8 @@ export class Item {
   public qty: number;
 
   constructor(itemConfig: Pick<IItem, "id" | "name"> & Partial<IItem>) {
+    itemValidator.usingData(itemConfig).validate();
+
     const {
       id,
       name,
@@ -37,64 +71,7 @@ export class Item {
       qty = 1,
     } = itemConfig;
 
-    // TODO replace these validaion checks with a schema validator.
-    if (typeof id !== "string" || !id) {
-      throw Error(
-        `Invalid id in scene properties ${JSON.stringify(itemConfig)}`
-      );
-    }
-
-    if (typeof name !== "string" || !name) {
-      throw Error(
-        `Invalid name in item properties ${JSON.stringify(itemConfig)}`
-      );
-    }
-
-    if (typeof sceneDescFragment !== "string" || !name) {
-      throw Error(
-        `Invalid sceneDescFragment in item properties ${JSON.stringify(
-          itemConfig
-        )}`
-      );
-    }
-
-    if (typeof takenMessage !== "string") {
-      throw Error(
-        `Invalid takenMessage in item properties ${JSON.stringify(itemConfig)}`
-      );
-    }
-
-    if (typeof takenPointValue !== "number") {
-      throw Error(
-        `Invalid takenPointValue in item properties ${JSON.stringify(
-          itemConfig
-        )}`
-      );
-    }
-
-    if (typeof examineMessage !== "string") {
-      throw Error(
-        `Invalid examineMessage in item properties ${JSON.stringify(
-          itemConfig
-        )}`
-      );
-    }
-
-    if (typeof examinePointValue !== "number") {
-      throw Error(
-        `Invalid examinePointValue in item properties ${JSON.stringify(
-          itemConfig
-        )}`
-      );
-    }
-
-    if (typeof qty !== "number" || qty < 1) {
-      throw Error(
-        `Invalid qty in item properties ${JSON.stringify(itemConfig)}`
-      );
-    }
-
-    this.id = crypto.randomUUID();
+    this.id = id;
     this.name = name;
     this.sceneDescFragment = sceneDescFragment;
     this.isTakeable = isTakeable;

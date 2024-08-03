@@ -1,3 +1,4 @@
+import { ObjectValidator, Rule, ValidationType } from "../utils/validation";
 import Exit, { ExitDirection } from "./Exit";
 import { Item } from "./Item";
 
@@ -11,6 +12,30 @@ interface IScene {
   exits: Map<ExitDirection, Exit>;
   items: Map<string, Item>;
 }
+
+const sceneValidator = new ObjectValidator()
+  .isFor("sceneConfig")
+  .addRule(
+    new Rule<string>()
+      .forProperties(["id", "name", "description"])
+      .hasType(ValidationType.STRING)
+      .disallowed(new Set([""]))
+      .description("must be a non-empty string")
+  )
+  .addRule(
+    new Rule<string>()
+      .forProperties(["prompt"])
+      .hasType(ValidationType.STRING)
+      .disallowed(new Set([""]))
+      .isOptional()
+      .description("must be a non-empty string")
+  )
+  .addRule(
+    new Rule<Map<string, unknown>>()
+      .forProperties(["exits", "items"])
+      .isInstanceOf(Map)
+      .description("must be a Map instance")
+  );
 
 export class Scene {
   public id: string;
@@ -34,40 +59,7 @@ export class Scene {
       items,
     } = sceneConfig;
 
-    if (typeof id !== "string" || !id) {
-      throw Error(
-        `Invalid id in scene properties ${JSON.stringify(sceneConfig)}`
-      );
-    }
-
-    if (typeof name !== "string" || !name) {
-      throw Error(
-        `Invalid name in scene properties ${JSON.stringify(sceneConfig)}`
-      );
-    }
-
-    if (typeof description !== "string" || !description) {
-      throw Error(
-        `Invalid description in scene properties ${JSON.stringify(sceneConfig)}`
-      );
-    }
-
-    if (typeof prompt !== "string" || !prompt) {
-      throw Error(
-        `Invalid prompt in scene properties ${JSON.stringify(sceneConfig)}`
-      );
-    }
-
-    if (!(exits instanceof Map)) {
-      throw Error(
-        `Invalid exits in scene properties ${JSON.stringify(sceneConfig)}`
-      );
-    }
-    if (!(items instanceof Map)) {
-      throw Error(
-        `Invalid items in scene properties ${JSON.stringify(sceneConfig)}`
-      );
-    }
+    sceneValidator.usingData(sceneConfig).validate();
 
     this.id = id;
     this.name = name;

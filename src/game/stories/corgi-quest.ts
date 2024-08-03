@@ -43,7 +43,6 @@ export default function loadCorgiQuest() {
             examinePointValue: 10,
             examineMessage:
               "This mushroom seems to be muttering something about taxes.",
-            qty: 1,
           }),
         ],
       ]),
