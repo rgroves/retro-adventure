@@ -33,11 +33,9 @@ export default function BaseLayout({ children }: BaseLayoutProps) {
           <Grid className="header-container">
             <NavMenu />
             <SiteTitle />
-            <Authenticator initialState="signIn" variation="modal">
-              <Authenticator.Provider>
-                <UserMenu />
-              </Authenticator.Provider>
-            </Authenticator>
+            <Authenticator.Provider>
+              <UserMenu />
+            </Authenticator.Provider>
           </Grid>
         </header>
         <main style={{ flex: "auto" }}>{children}</main>

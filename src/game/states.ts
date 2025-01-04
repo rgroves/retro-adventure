@@ -89,6 +89,7 @@ export class GameOverState extends GameState {
     this.game.setFeedbackOutput([`Score: ${this.game.score.toString()}`]);
     this.game.setPlayerPrompt("Game Over");
     void this.game.saveScore();
+    this.game.gameOver = true;
   }
 }
 
@@ -97,6 +98,7 @@ export class PoweredOnState extends GameState {
     this.game.initialize();
     this.game.changeState(new StartSceneState(this.game));
     this.game.state.playScene(this.game.scenes[0], true);
+    this.game.gameOver = false;
   }
 }
 

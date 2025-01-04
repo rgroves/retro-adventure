@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchUserAttributes } from "aws-amplify/auth";
 import {
+  Authenticator,
   Flex,
   Link,
   Loader,
@@ -9,8 +10,13 @@ import {
 } from "@aws-amplify/ui-react";
 
 export default function UserMenu() {
-  const { user, signOut } = useAuthenticator((context) => [context.user]);
+  const {
+    user = null,
+    authStatus,
+    signOut,
+  } = useAuthenticator((context) => [context.user, context.authStatus]);
   const [preferredUserName, setPreferredUserName] = useState("");
+  const [showAuth, setShowAuth] = useState(false);
 
   const signOutFlow = (element: React.MouseEvent<HTMLAnchorElement>) => {
     element.preventDefault();
@@ -21,17 +27,20 @@ export default function UserMenu() {
 
   useEffect(() => {
     async function loadUserAttributes() {
-      let attributes, name;
+      let attributes;
+      let name = "Guest";
 
       try {
-        attributes = await fetchUserAttributes();
-        name = attributes.preferred_username
-          ? attributes.preferred_username
-          : "unknown";
+        if (authStatus === "authenticated") {
+          attributes = await fetchUserAttributes();
+          name = attributes.preferred_username
+            ? attributes.preferred_username
+            : "unknown";
+          setShowAuth(false);
+        }
       } catch (err) {
         console.error(err);
         console.log("Failed to get auth user info. Treating user as guest.");
-        name = "Guest";
       }
 
       setPreferredUserName(name);
@@ -53,17 +62,33 @@ export default function UserMenu() {
     } else {
       void loadUserAttributes();
     }
-  }, [user.userId]);
+  }, [user?.userId, authStatus]);
+
+  if (!preferredUserName) {
+    return <Loader />;
+  }
+
+  if (showAuth || authStatus === "authenticated") {
+    return (
+      <Authenticator initialState="signIn" variation="modal">
+        <Flex className="user-menu-container">
+          <Text>Welcome {preferredUserName}</Text>
+          <Link className="sign-out" href="#" onClick={signOutFlow}>
+            (sign out)
+          </Link>
+        </Flex>
+      </Authenticator>
+    );
+  }
 
   return (
     <Flex className="user-menu-container">
-      {preferredUserName ? (
-        <Text>Welcome {preferredUserName}</Text>
-      ) : (
-        <Loader />
-      )}
-      <Link className="sign-out" href="#" onClick={signOutFlow}>
-        (sign out)
+      <Link
+        onClick={() => {
+          setShowAuth(true);
+        }}
+      >
+        Sign in
       </Link>
     </Flex>
   );

@@ -23,9 +23,6 @@ import loadCorgiQuest, { storyTitle } from "./stories/corgi-quest";
 
 const client = generateClient<Schema>();
 
-type OutputAdapter = (output: string[], clear?: boolean) => void;
-type PlayerPromptAdapter = React.Dispatch<React.SetStateAction<string>>;
-
 export class Game {
   public currentScene: Scene;
   public inventory: Map<string, Item>;
@@ -36,37 +33,16 @@ export class Game {
     return this._commandProcessor;
   }
 
-  get setFeedbackOutput(): OutputAdapter {
-    if (!this._setFeedbackOutput) {
-      throw new Error("The feedback output adapter is not initialized!");
-    }
-    return this._setFeedbackOutput;
+  get narrativeOutput() {
+    return this._narrativeOutput;
   }
 
-  set setFeedbackOutput(callback: OutputAdapter) {
-    this._setFeedbackOutput = callback;
+  get feedbackOutput() {
+    return this._feedbackOutput;
   }
 
-  get setNarrativeOutput(): OutputAdapter {
-    if (!this._setNarrativeOutput) {
-      throw new Error("The narrative output adapter is not initialized!");
-    }
-    return this._setNarrativeOutput;
-  }
-
-  set setNarrativeOutput(callback: OutputAdapter) {
-    this._setNarrativeOutput = callback;
-  }
-
-  get setPlayerPrompt() {
-    if (!this._setPlayerPrompt) {
-      throw new Error("The player prompt adapter is not initialized!");
-    }
-    return this._setPlayerPrompt;
-  }
-
-  set setPlayerPrompt(callback: PlayerPromptAdapter) {
-    this._setPlayerPrompt = callback;
+  get playerPrompt() {
+    return this._playerPrompt;
   }
 
   get scenes() {
@@ -80,12 +56,22 @@ export class Game {
     return this._state;
   }
 
-  private _setFeedbackOutput: OutputAdapter | null;
-  private _setNarrativeOutput: OutputAdapter | null;
+  get isGameOver() {
+    return this._isGameOver;
+  }
+
+  set gameOver(value: boolean) {
+    this._isGameOver = value;
+  }
+
   private _commandProcessor: CommandProcessor;
-  private _setPlayerPrompt: PlayerPromptAdapter | null;
   private _scenes: Scene[];
   private _state: GameState | null;
+  private _narrativeOutput: string[];
+  private _feedbackOutput: string[];
+  private _playerPrompt: string;
+  private _isGameOver: boolean;
+  private _gameUpdateSubscribers: ((tick: number) => void)[];
 
   constructor() {
     this.currentScene = new Scene({
@@ -95,9 +81,7 @@ export class Game {
       exits: new Map(),
       items: new Map(),
     });
-    this._setFeedbackOutput = null;
-    this._setNarrativeOutput = null;
-    this._setPlayerPrompt = null;
+    this._gameUpdateSubscribers = [];
     this.changeState(new PoweredOnState(this));
     this._commandProcessor = new CommandProcessor();
     this._scenes = [];
@@ -105,10 +89,15 @@ export class Game {
     this.inventory = new Map();
     this.score = 0;
     this.storyTitle = "";
+    this._narrativeOutput = [];
+    this._feedbackOutput = [];
+    this._playerPrompt = "";
+    this._isGameOver = true;
   }
 
   changeState(state: GameState) {
     this._state = state;
+    this.update();
     // console.log(`State has changed to ${state.constructor.name}`);
   }
 
@@ -116,6 +105,10 @@ export class Game {
     this.score = 0;
     this.inventory = new Map();
     this._scenes = this.loadScenes();
+    this._narrativeOutput = [];
+    this._feedbackOutput = [];
+    this._playerPrompt = "";
+    this._isGameOver = false;
   }
 
   async saveScore() {
@@ -150,6 +143,10 @@ export class Game {
 
   powerOff() {
     this.state.powerOff();
+  }
+
+  reset() {
+    console.log("TODO: Implement game reset");
   }
 
   processInput(rawInput: string): IParsedPlayerCommand {
@@ -208,6 +205,35 @@ export class Game {
     }
 
     return playerCommand;
+  }
+
+  setNarrativeOutput(output: string[], clear = false) {
+    if (clear) {
+      this._narrativeOutput = [];
+    }
+    this._narrativeOutput.push(...output);
+  }
+
+  setFeedbackOutput(output: string[], clear = false) {
+    if (clear) {
+      this._feedbackOutput = [];
+    }
+    this._feedbackOutput.push(...output);
+  }
+
+  setPlayerPrompt(prompt: string) {
+    this._playerPrompt = prompt;
+  }
+
+  subscribeToGameUpdates(subscriber: (tick: number) => void) {
+    this._gameUpdateSubscribers.push(subscriber);
+  }
+
+  update() {
+    const tick = Date.now();
+    this._gameUpdateSubscribers.forEach((subscriber) => {
+      subscriber(tick);
+    });
   }
 
   private loadScenes(): Scene[] {

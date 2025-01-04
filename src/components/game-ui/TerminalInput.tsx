@@ -1,62 +1,53 @@
+import { useRef, useState } from "react";
 import { Input } from "@aws-amplify/ui-react";
-import {
-  PlayerCommandStatus,
-  PlayerInputParser,
-} from "../../game/CommandProcessor";
-import { Game } from "../../game/Game";
-import { GameOverState } from "../../game/states";
 
 interface TerminalInputProps {
-  inputRef: React.RefObject<HTMLInputElement>;
-  game: Game;
-  playerInputProcessor: PlayerInputParser;
   disabled: boolean;
-  setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
-  setInputFeedback: React.Dispatch<React.SetStateAction<string>>;
-  playerInput: string;
-  setPlayerInput: React.Dispatch<React.SetStateAction<string>>;
+  onInputSubmitted: (playerInput: string) => boolean;
+  shouldClearInput: boolean;
+  shouldFocusInput: boolean;
 }
 
 export default function TerminalInput({
-  inputRef,
-  game,
-  playerInputProcessor,
   disabled,
-  setDisabled,
-  setInputFeedback,
-  playerInput,
-  setPlayerInput,
+  onInputSubmitted,
+  shouldClearInput,
+  shouldFocusInput,
 }: TerminalInputProps) {
+  const playerInputRef = useRef<HTMLInputElement>(null);
+  const [playerInput, setPlayerInput] = useState("");
+
+  if (shouldFocusInput) {
+    playerInputRef.current?.focus();
+  }
+
+  if (shouldClearInput && playerInput != "") {
+    setPlayerInput("");
+  }
+
   const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setDisabled(true);
-    const command = playerInputProcessor(playerInput);
 
-    if (command.status === PlayerCommandStatus.INVALID) {
-      setInputFeedback("Invalid command");
-    } else {
-      setPlayerInput("");
-      setInputFeedback("");
-    }
+    if (playerInput.trim() !== "") {
+      const isCommandValid = onInputSubmitted(playerInput);
 
-    if (!(game.state instanceof GameOverState)) {
-      setDisabled(false);
+      if (isCommandValid) {
+        setPlayerInput("");
+      }
     }
   };
 
   return (
-    <>
-      <form onSubmit={submitHandler}>
-        <Input
-          ref={inputRef}
-          disabled={disabled}
-          type="text"
-          onChange={(e) => {
-            setPlayerInput(e.target.value);
-          }}
-          value={playerInput}
-        />
-      </form>
-    </>
+    <form onSubmit={submitHandler}>
+      <Input
+        ref={playerInputRef}
+        disabled={disabled}
+        type="text"
+        onChange={(e) => {
+          setPlayerInput(e.target.value);
+        }}
+        value={playerInput}
+      />
+    </form>
   );
 }
