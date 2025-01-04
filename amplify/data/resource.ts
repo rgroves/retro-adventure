@@ -24,9 +24,6 @@ const schema = a.schema({
       allow.publicApiKey().to(["read"]),
       allow.owner().to(["create", "read"]),
     ]),
-  Kludge: a
-    .model({ kid: a.id() })
-    .authorization((allow) => [allow.publicApiKey()]),
 });
 
 // Used for code completion / highlighting when making requests from frontend
