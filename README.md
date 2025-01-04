@@ -13,3 +13,4 @@ Built for [Jason Lengstorf's](https://www.learnwithjason.dev/) [Web Dev Challeng
 - run `npm run aws-sso-refresh` if needed (to refresh your AWS access token)
 - run `npm run amplify-backend` to spin up the local sandbox and generate the `amplify_outputs.json` file.
 - run `npm run dev` to spin up the dev server.
+- run `npm run amplify-backend-delete` to delete all the sandbox infrastructure up on AWS.
